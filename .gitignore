@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Training artifacts — keep large binaries out of version control
+runs/
+checkpoints/
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+samples/
+logs/
+
+# Data
+data/
+*.txt.gz
+
+# OS
+.DS_Store
