@@ -1,0 +1,20 @@
+{
+  "vocab_size": 4000,
+  "n_layers": 4,
+  "n_heads": 4,
+  "d_model": 128,
+  "block_size": 128,
+  "batch_size": 16,
+  "grad_accum_steps": 1,
+  "max_steps": 300,
+  "warmup_steps": 30,
+  "lr": 6e-4,
+  "eval_interval": 100,
+  "eval_iters": 20,
+  "sample_interval": 150,
+  "checkpoint_interval": 150,
+  "log_interval": 50,
+  "out_dir": "runs/shnu_smoke",
+  "dtype": "float32",
+  "seed": 1337
+}
