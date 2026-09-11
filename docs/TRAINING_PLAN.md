@@ -95,20 +95,28 @@ accumulates gradients over 4 micro-steps, then performs a single clipped optimiz
 and scheduler tick. This keeps the optimization math identical to a true batch of 64
 while keeping peak activation memory at the 16-sequence level.
 
-## T4-dependent values — UNKNOWN until a pilot is measured
+## T4-dependent values — measured by the pilot
 
-These **cannot** be known without running on a real T4, and are deliberately left as
-UNKNOWN. They will be filled in only from a measured pilot, never estimated as if
-measured.
+These were **UNKNOWN until measured on a real T4**. The values below come from a real
+pilot run on a free-Colab Tesla T4 (15.64 GB, torch 2.11.0+cu128 / CUDA 12.8) via
+`scripts/pilot.py --config configs/v0.2.json --pilot-steps 40`. They are measurements,
+not analytic guesses.
 
-| Quantity | Status |
+| Quantity | Measured value |
 |---|---|
-| T4 throughput (tokens/sec) | **UNKNOWN** — measure with `scripts/pilot.py` |
-| T4 peak GPU memory | **UNKNOWN** — analytic ballpark only: ~5–7 GB fp16 at this config (to be confirmed by measurement) |
-| T4 wall-clock for recommended run | **UNKNOWN** — equals `recommended_training_tokens / measured_tokens_per_second` |
+| GPU | Tesla T4, 15.64 GB |
+| T4 throughput | **9,940.6 tokens/sec** (pilot benchmark, bfloat16 autocast) |
+| T4 peak GPU memory | **5.28 GB** (of 15.64 GB — comfortable headroom) |
+| AMP dtype actually used | `torch.bfloat16` (auto-selected by `resolve_dtype`; not fp16) |
+| Estimated wall-clock, recommended run | **≈ 6.5 hours** = 233,991,110 tokens ÷ 9,940.6 tok/s ≈ 23,540 s |
 
-**Runtime caveat:** free T4 sessions time out and disconnect without warning. The run
-**must** be resumable and checkpoint frequently (every 500 steps here). The recovery
+The wall-clock estimate is derived from the measured pilot throughput; a full run's
+sustained rate may differ somewhat from the short pilot benchmark, so treat ~6.5 h as an
+informed estimate rather than a guarantee.
+
+**Runtime caveat:** free T4 sessions time out and disconnect without warning, and a
+~6.5-hour run will not fit in one session. The run **must** be resumable and checkpoint
+frequently (every 500 steps here), so it spans several resumable sessions. The recovery
 procedure is documented in [`RECOVERY.md`](RECOVERY.md).
 
 ## How a real run is launched (guarded)

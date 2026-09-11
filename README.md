@@ -76,11 +76,15 @@ BPE tokenizer, and adds durable Google Drive persistence so a run survives free-
 disconnects. The dataset and tokenizer are prepared and hash-verified; the engineering
 for training, resume, safety, and evaluation is implemented and tested.
 
-**What has *not* happened yet, stated plainly:**
+**Validation status:**
 
-- v0.2 has **not** been trained. No v0.2 weights or loss/perplexity numbers exist.
-- The T4 pilot has **not** been run. All throughput, GPU-memory, and wall-clock figures
-  are marked **UNKNOWN** until measured — see [`docs/TRAINING_PLAN.md`](docs/TRAINING_PLAN.md).
+- The T4 pilot **has been run and passed** on a free-Colab Tesla T4: random init confirmed
+  (initial loss ≈ ln(vocab)), loss decreased with no NaN/Inf, checkpoint save→reload→resume
+  verified, measured throughput ≈ 9,940 tok/s and peak GPU memory ≈ 5.28 GB. See
+  [`docs/TRAINING_PLAN.md`](docs/TRAINING_PLAN.md).
+- v0.2 has **not** been trained. The pilot is a short pre-flight (a few dozen steps); no
+  full v0.2 weights or final loss/perplexity numbers exist yet, and the long run is a
+  separate, deliberately authorized step.
 
 The deterministic training plan (tokens/step, recommended budget, checkpoint cadence,
 storage), the fresh-runtime recovery procedure, and the safety gates are documented in
