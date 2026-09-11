@@ -28,6 +28,7 @@ Configs live in `configs/`. Parameter counts are measured, not estimated.
 |---|---|---|---|---|---|---|
 | `configs/smoke.json` | 4 | 128 | 4 | 128 | 4,000 | 1,365,120 |
 | `configs/t4.json` | 8 | 512 | 8 | 512 | 16,000 | 33,890,816 |
+| `configs/v0.2.json` | 8 | 512 | 8 | 512 | 16,000 | 33,890,816 |
 
 ## Tokenizer
 
@@ -35,8 +36,10 @@ Byte-level BPE trained from scratch on the project corpus (`tokenizer/train_toke
 
 ## Dataset
 
-- **Primary:** WikiText-103 (raw), human-written Wikipedia text — license **CC BY-SA 3.0**, streamed via HuggingFace `datasets` and bounded for modest compute.
+- **Primary (v0.2):** WikiText-103-raw-v1, human-written Wikipedia text — license **CC BY-SA 3.0**, loaded via HuggingFace `datasets` (`Salesforce/wikitext`, non-streaming).
 - **Fallback:** Tiny Shakespeare (public domain) when the dataset hub is unreachable.
+
+Full provenance, acquisition, and the preparation pipeline: [`docs/DATASET.md`](docs/DATASET.md).
 
 Preprocessing: newline normalization; removal of empty, too-short, and exact-duplicate records; train/validation split with no overlap to avoid leakage. Third-party text retains its own license; this project does not claim ownership of it.
 
@@ -66,14 +69,33 @@ Reported from the run (`runs/<name>/evaluation/final_report.json`): parameter co
 
 v0.1 reference run (single NVIDIA T4, bounded proof-of-concept): 33,890,816 parameters; initial loss 9.81 ≈ ln(16000)=9.68 (confirms correct random initialization); training loss 9.78 → 4.26; validation loss 5.29; perplexity ≈ 198. Full details and sample generations: [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md). These numbers are specific to the corpus, tokenizer, and step budget of that run and are not comparable across datasets.
 
+## v0.2 status (in progress — not yet trained)
+
+v0.2 moves to the larger WikiText-103-raw corpus (~117M training tokens) with a 16,000
+BPE tokenizer, and adds durable Google Drive persistence so a run survives free-tier
+disconnects. The dataset and tokenizer are prepared and hash-verified; the engineering
+for training, resume, safety, and evaluation is implemented and tested.
+
+**What has *not* happened yet, stated plainly:**
+
+- v0.2 has **not** been trained. No v0.2 weights or loss/perplexity numbers exist.
+- The T4 pilot has **not** been run. All throughput, GPU-memory, and wall-clock figures
+  are marked **UNKNOWN** until measured — see [`docs/TRAINING_PLAN.md`](docs/TRAINING_PLAN.md).
+
+The deterministic training plan (tokens/step, recommended budget, checkpoint cadence,
+storage), the fresh-runtime recovery procedure, and the safety gates are documented in
+[`docs/TRAINING_PLAN.md`](docs/TRAINING_PLAN.md) and [`docs/RECOVERY.md`](docs/RECOVERY.md).
+Long training is launched only through the guarded entrypoint `scripts/train_v0_2.py`,
+which runs every safety gate and still refuses to train without `--confirm-long-run`.
+
 ## Limitations
 
 SHNU-LLM v0.1 is a small model trained on a small amount of text for a short schedule. It is **not** comparable to large frontier language models and will not answer general questions reliably. It produces locally fluent but often globally incoherent text, has no instruction-following, alignment, or factual grounding, and reflects the characteristics of its training corpus. It is a foundation and a pipeline, not a product.
 
 ## Roadmap
 
-- **v0.1** — from-scratch pipeline, ~34M-parameter reference run *(current)*
-- **v0.2** — larger corpus subset, longer training, Google Drive checkpoint persistence
+- **v0.1** — from-scratch pipeline, ~34M-parameter reference run *(complete)*
+- **v0.2** — WikiText-103-raw corpus, 16K tokenizer, Google Drive persistence, deterministic eval suite and safety gates *(engineering complete; training not yet run)*
 - **v0.3** — larger model as compute allows
 - **v0.4** — improved tokenizer and data pipeline
 - **v0.5** — training-stability and schedule tuning, standardized eval harness
@@ -91,14 +113,14 @@ SHNU-LLM/
 ├── LICENSE
 ├── pyproject.toml
 ├── requirements.txt
-├── src/shnu_llm/        # library: config, model, tokenizer, data, training, generation
-├── scripts/             # train.py entrypoint
+├── src/shnu_llm/        # library: config, model, tokenizer, data, training, evaluation, preflight
+├── scripts/             # train.py, prepare_data.py, pilot.py, resume.py, train_v0_2.py, training_plan.py
 ├── tokenizer/           # tokenizer training CLI
-├── evaluation/          # evaluation CLI
-├── configs/             # smoke.json, t4.json
+├── evaluation/          # deterministic evaluation CLI + fixed prompt spec
+├── configs/             # smoke.json, t4.json, v0.2.json
 ├── notebooks/           # SHNU_LLM_From_Scratch.ipynb
-├── tests/               # end-to-end smoke test
-└── docs/                # evaluation methodology, run report
+├── tests/               # smoke, recovery, evaluation, and preflight tests
+└── docs/                # DATASET, TRAINING_PLAN, RECOVERY, EVALUATION, FINAL_REPORT
 ```
 
 Trained checkpoints and large model files are kept out of version control (see `.gitignore`); store them in Google Drive or a model registry.
