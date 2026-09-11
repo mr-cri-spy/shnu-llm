@@ -13,11 +13,19 @@ from .tokenizer import (
 )
 from .model import ShnuLM
 from .training import (
-    get_lr, configure_optimizer, estimate_loss, save_checkpoint, load_checkpoint, train,
+    get_lr, configure_optimizer, estimate_loss, save_checkpoint, load_checkpoint,
+    train, prune_checkpoints,
 )
 from .generation import sample_text
 from .persistence import (
     find_latest_checkpoint, verify_checkpoint_compatible, checkpoint_step,
+)
+from .evaluation import (
+    validation_perplexity, repetition_metrics, context_length_test, evaluate_generation,
+)
+from .preflight import (
+    PreflightError, run_preflight, require_gpu, require_drive_mounted, require_free_disk,
+    verify_dataset, verify_tokenizer, verify_checkpoint,
 )
 
 __version__ = "0.1.0"
@@ -26,6 +34,9 @@ __all__ = [
     "clean_text", "clean_records", "build_token_stream", "train_val_split", "PackedDataset",
     "SPECIAL_TOKENS", "train_tokenizer", "load_tokenizer", "encode", "decode",
     "ShnuLM", "get_lr", "configure_optimizer", "estimate_loss",
-    "save_checkpoint", "load_checkpoint", "train", "sample_text",
+    "save_checkpoint", "load_checkpoint", "train", "prune_checkpoints", "sample_text",
     "find_latest_checkpoint", "verify_checkpoint_compatible", "checkpoint_step",
+    "validation_perplexity", "repetition_metrics", "context_length_test", "evaluate_generation",
+    "PreflightError", "run_preflight", "require_gpu", "require_drive_mounted",
+    "require_free_disk", "verify_dataset", "verify_tokenizer", "verify_checkpoint",
 ]
