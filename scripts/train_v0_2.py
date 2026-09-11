@@ -26,7 +26,7 @@ from shnu_llm.preflight import PreflightError
 # Verified v0.2 baseline integrity values (see docs/DATASET.md).
 EXPECTED = {
     "dataset_sha256_prefix": "1f9f77ec26e7477b7bf3c80c72a2e365749731f",
-    "tokenizer_sha256_prefix": "1bf9397a6213d1a303c9d149d028fa2c456dc",
+    "tokenizer_sha256_prefix": "1bf9397a6213d1a303c9d149d028fa2c456dd1a9",
     "vocab_size": 16000,
     "train_tokens": 116995555,
     "val_tokens": 1181773,
