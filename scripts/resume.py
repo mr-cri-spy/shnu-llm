@@ -20,6 +20,7 @@ import os
 import sys
 import json
 import math
+import time
 import argparse
 
 import numpy as np
@@ -27,6 +28,54 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import shnu_llm as S
+
+REPO = os.path.join(os.path.dirname(__file__), "..")
+
+
+def _device_info(device: str):
+    name, mem = None, None
+    if device == "cuda" and torch.cuda.is_available():
+        name = torch.cuda.get_device_name(0)
+        mem = round(torch.cuda.get_device_properties(0).total_memory / 1e9, 2)
+    return name, mem
+
+
+def _build_status_cb(status, cfg, start_step: int):
+    """Return a best-effort callback that mirrors training events into the status file.
+
+    Status is a convenience view; the checkpoint remains authoritative. Any failure
+    here is swallowed so it can never interrupt training.
+    """
+    tps = S.tokens_per_step(cfg)
+    t0 = time.time()
+
+    def cb(event, **kw):
+        try:
+            step = int(kw.get("step", start_step))
+            elapsed = time.time() - t0
+            done = max(0, step - start_step)
+            thr = round(done * tps / elapsed, 1) if elapsed > 0 and done > 0 else None
+            fields = {"current_step": step}
+            if kw.get("train_loss") is not None:
+                fields["train_loss"] = round(float(kw["train_loss"]), 6)
+            if kw.get("val_loss") is not None:
+                fields["validation_loss"] = round(float(kw["val_loss"]), 6)
+            if kw.get("best_val") is not None and math.isfinite(kw["best_val"]):
+                fields["best_validation_loss"] = round(float(kw["best_val"]), 6)
+            if kw.get("latest"):
+                fields["latest_checkpoint"] = kw["latest"]
+            if thr is not None:
+                fields["throughput_tokens_per_second"] = thr
+            if event == "complete" and step >= (cfg.max_steps):
+                fields["state"] = "completed"
+                if kw.get("elapsed_seconds") is not None:
+                    fields["elapsed_seconds"] = round(float(kw["elapsed_seconds"]), 2)
+            else:
+                fields["state"] = "active"
+            status.update(cfg, **fields)
+        except Exception:
+            pass
+    return cb
 
 
 def load_data(out_dir: str, dataset: str, vocab_size: int, block_size: int, device: str):
@@ -38,9 +87,14 @@ def load_data(out_dir: str, dataset: str, vocab_size: int, block_size: int, devi
 
 
 def resume_training(cfg, out_dir: str, dataset: str, allow_fresh: bool = False,
-                    device: str | None = None, verbose: bool = True):
+                    device: str | None = None, verbose: bool = True, status_enabled: bool = True):
     """Discover + verify + resume. Returns the train() result dict. Raises SystemExit
-    on a missing checkpoint unless allow_fresh=True."""
+    on a missing checkpoint unless allow_fresh=True.
+
+    A persistent training-status file is reconciled from the checkpoint before training
+    (the checkpoint is authoritative) and updated at training events. Status is a
+    convenience view only; it never affects resume correctness.
+    """
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     cfg.out_dir = out_dir
 
@@ -67,10 +121,49 @@ def resume_training(cfg, out_dir: str, dataset: str, allow_fresh: bool = False,
         if verbose:
             print(f"[resume] found {os.path.basename(latest)} @ step {S.checkpoint_step(latest)} (compatible)")
 
+    # --- persistent status: reconcile from checkpoint (authoritative) before training ---
+    status = status_cb = None
+    if status_enabled:
+        try:
+            status = S.TrainingStatus.for_run(out_dir)
+            gpu_name, gpu_mem = _device_info(device)
+            rec = status.reconcile(cfg, git_commit=S.current_git_commit(REPO),
+                                   device=device, gpu_name=gpu_name, gpu_memory_gb=gpu_mem)
+            start_step = int(rec.get("current_step", 0))
+            status.update(cfg,
+                          session_count=int(rec.get("session_count", 0)) + 1,
+                          resume_count=int(rec.get("resume_count", 0)) + (1 if latest is not None else 0),
+                          state="active")
+            status_cb = _build_status_cb(status, cfg, start_step)
+            if verbose:
+                print(f"[resume] status reconciled: step={start_step} "
+                      f"(reconciliation occurred={rec.get('reconciliation', {}).get('occurred')})")
+        except Exception as e:
+            if verbose:
+                print(f"[resume] status monitor unavailable ({e!r}); continuing without it")
+            status = status_cb = None
+
     S.set_seed(cfg.seed)
     model = S.ShnuLM(cfg).to(device)
-    result = S.train(model, datasets, cfg, device, resume_from=latest,
-                     tokenizer=tok, eos_id=eos_id, sample_prompt="The ", verbose=verbose)
+    try:
+        result = S.train(model, datasets, cfg, device, resume_from=latest,
+                         tokenizer=tok, eos_id=eos_id, sample_prompt="The ",
+                         verbose=verbose, status_cb=status_cb)
+    except KeyboardInterrupt:
+        if status is not None:
+            try:
+                status.update(cfg, state="interrupted", last_error="KeyboardInterrupt (Colab disconnect / manual stop)")
+            except Exception:
+                pass
+        raise
+    except Exception as e:
+        if status is not None:
+            try:
+                status.update(cfg, state="failed", last_error=repr(e)[:300])
+            except Exception:
+                pass
+        raise
+
     if verbose:
         print(f"[resume] step {result['start_step']} -> {result['steps']} "
               f"| val_loss {result['final_val_loss']:.4f} ppl {math.exp(result['final_val_loss']):.2f}")

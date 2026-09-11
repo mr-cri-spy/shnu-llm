@@ -103,9 +103,20 @@ def prune_checkpoints(ckpt_dir: str, keep_last: int = 2):
             pass
 
 
+def _emit(status_cb, event: str, **kw):
+    """Best-effort status callback: never let a status write break training."""
+    if status_cb is None:
+        return
+    try:
+        status_cb(event, **kw)
+    except Exception:
+        pass
+
+
 def train(model, datasets, cfg: ShnuConfig, device: str,
           resume_from: Optional[str] = None, verbose: bool = True,
-          tokenizer=None, eos_id=None, sample_prompt="\n", keep_last_checkpoints: int = 2):
+          tokenizer=None, eos_id=None, sample_prompt="\n", keep_last_checkpoints: int = 2,
+          status_cb=None):
     os.makedirs(os.path.join(cfg.out_dir, "checkpoints"), exist_ok=True)
     os.makedirs(os.path.join(cfg.out_dir, "samples"), exist_ok=True)
     os.makedirs(os.path.join(cfg.out_dir, "logs"), exist_ok=True)
@@ -141,6 +152,9 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
                 print(f"[resume] RNG restore skipped ({e!r})")
         if verbose:
             print(f"[resume] from step {start_step} (best_val={best_val:.4f}); RNG restored")
+
+    _emit(status_cb, "resume" if (resume_from and os.path.exists(resume_from)) else "start",
+          step=start_step, best_val=best_val)
 
     gen = torch.Generator().manual_seed(cfg.seed + start_step)
     model.train()
@@ -190,6 +204,8 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
                 best_val = metrics["val"]
                 save_checkpoint(os.path.join(cfg.out_dir, "checkpoints", "checkpoint_best.pt"),
                                 model, optimizer, cfg, step, best_val, log)
+            _emit(status_cb, "eval", step=step, train_loss=metrics["train"],
+                  val_loss=metrics["val"], best_val=best_val)
 
         # periodic sampling
         if tokenizer is not None and step > 0 and step % cfg.sample_interval == 0:
@@ -207,6 +223,8 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
             save_checkpoint(os.path.join(cfg.out_dir, "checkpoints", "checkpoint_latest.pt"),
                             model, optimizer, cfg, step, best_val, log)
             prune_checkpoints(os.path.join(cfg.out_dir, "checkpoints"), keep_last_checkpoints)
+            _emit(status_cb, "checkpoint", step=step, best_val=best_val,
+                  latest=os.path.join(cfg.out_dir, "checkpoints", "checkpoint_latest.pt"))
 
     # final eval + checkpoint
     metrics = estimate_loss(model, datasets, cfg, gen, ctx)
@@ -215,6 +233,8 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
     with open(os.path.join(cfg.out_dir, "logs", "train_log.json"), "w") as f:
         json.dump(log, f, indent=2)
     total_time = time.time() - t0
+    _emit(status_cb, "complete", step=cfg.max_steps, train_loss=metrics["train"],
+          val_loss=metrics["val"], best_val=best_val, elapsed_seconds=total_time)
     return {
         "final_train_loss": metrics["train"],
         "final_val_loss": metrics["val"],

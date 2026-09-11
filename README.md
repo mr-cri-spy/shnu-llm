@@ -89,6 +89,9 @@ for training, resume, safety, and evaluation is implemented and tested.
 The deterministic training plan (tokens/step, recommended budget, checkpoint cadence,
 storage), the fresh-runtime recovery procedure, and the safety gates are documented in
 [`docs/TRAINING_PLAN.md`](docs/TRAINING_PLAN.md) and [`docs/RECOVERY.md`](docs/RECOVERY.md).
+A crash-safe, checkpoint-authoritative training monitor writes a durable
+`training_status.json` on Drive and is inspectable with `python scripts/status.py` — see
+[`docs/MONITORING.md`](docs/MONITORING.md).
 Long training is launched only through the guarded entrypoint `scripts/train_v0_2.py`,
 which runs every safety gate and still refuses to train without `--confirm-long-run`.
 
@@ -124,7 +127,7 @@ SHNU-LLM/
 ├── configs/             # smoke.json, t4.json, v0.2.json
 ├── notebooks/           # SHNU_LLM_From_Scratch.ipynb
 ├── tests/               # smoke, recovery, evaluation, and preflight tests
-└── docs/                # DATASET, TRAINING_PLAN, RECOVERY, EVALUATION, FINAL_REPORT
+└── docs/                # DATASET, TRAINING_PLAN, RECOVERY, MONITORING, EVALUATION, FINAL_REPORT
 ```
 
 Trained checkpoints and large model files are kept out of version control (see `.gitignore`); store them in Google Drive or a model registry.

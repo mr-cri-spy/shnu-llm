@@ -27,6 +27,10 @@ from .preflight import (
     PreflightError, run_preflight, require_gpu, require_drive_mounted, require_free_disk,
     verify_dataset, verify_tokenizer, verify_checkpoint,
 )
+from .status import (
+    TrainingStatus, tokens_per_step, current_git_commit,
+    VALID_STATES, STATUS_SCHEMA_VERSION, DEFAULT_RUN_NAME,
+)
 
 __version__ = "0.1.0"
 __all__ = [
@@ -39,4 +43,6 @@ __all__ = [
     "validation_perplexity", "repetition_metrics", "context_length_test", "evaluate_generation",
     "PreflightError", "run_preflight", "require_gpu", "require_drive_mounted",
     "require_free_disk", "verify_dataset", "verify_tokenizer", "verify_checkpoint",
+    "TrainingStatus", "tokens_per_step", "current_git_commit",
+    "VALID_STATES", "STATUS_SCHEMA_VERSION", "DEFAULT_RUN_NAME",
 ]
