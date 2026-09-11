@@ -94,6 +94,10 @@ A crash-safe, checkpoint-authoritative training monitor writes a durable
 [`docs/MONITORING.md`](docs/MONITORING.md).
 Long training is launched only through the guarded entrypoint `scripts/train_v0_2.py`,
 which runs every safety gate and still refuses to train without `--confirm-long-run`.
+For multi-session Colab runs there is a one-cell launcher/resumer
+(`scripts/colab_launch.py`) that pulls the latest code, verifies it, mounts Drive, runs
+the gates, reconciles the status, and resumes from the newest checkpoint — safe to
+re-run after any disconnect; see [`docs/LAUNCHER.md`](docs/LAUNCHER.md).
 
 ## Limitations
 
