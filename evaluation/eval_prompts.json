@@ -1,0 +1,17 @@
+{
+  "description": "Fixed, versioned evaluation set for SHNU-LLM. Do not change between versions so perplexity/generation stay comparable.",
+  "seed": 1337,
+  "eval_iters": 100,
+  "max_new_tokens": 80,
+  "context_lengths": [8, 64, 256, 512],
+  "prompts": [
+    "The history of",
+    "In the early years",
+    "Scientists have discovered that",
+    "The city of",
+    "According to the report,",
+    "One of the most important",
+    "During the war,",
+    "The theory suggests that"
+  ]
+}
