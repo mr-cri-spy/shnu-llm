@@ -72,7 +72,12 @@ def save_checkpoint(path, model, optimizer, cfg, step, best_val, log, rng_state=
     }
     if rng_state is not None:
         ckpt["cuda_rng_state"] = rng_state
-    torch.save(ckpt, path)
+    elif torch.cuda.is_available():
+        ckpt["cuda_rng_state"] = torch.cuda.get_rng_state_all()
+    # write atomically so an interrupted save can never corrupt the checkpoint
+    tmp = path + ".tmp"
+    torch.save(ckpt, tmp)
+    os.replace(tmp, path)
 
 
 def load_checkpoint(path, model, optimizer=None, map_location="cpu"):
@@ -83,9 +88,24 @@ def load_checkpoint(path, model, optimizer=None, map_location="cpu"):
     return ckpt
 
 
+def prune_checkpoints(ckpt_dir: str, keep_last: int = 2):
+    """Keep only the newest `keep_last` numbered step checkpoints (checkpoint_latest.pt
+    and checkpoint_best.pt are never pruned), bounding durable storage."""
+    import glob
+    if keep_last is None or keep_last < 0:
+        return
+    steps = sorted(glob.glob(os.path.join(ckpt_dir, "checkpoint_step_*.pt")),
+                   key=lambda p: int("".join(filter(str.isdigit, os.path.basename(p))) or 0))
+    for old in steps[:-keep_last] if keep_last else steps:
+        try:
+            os.remove(old)
+        except OSError:
+            pass
+
+
 def train(model, datasets, cfg: ShnuConfig, device: str,
           resume_from: Optional[str] = None, verbose: bool = True,
-          tokenizer=None, eos_id=None, sample_prompt="\n"):
+          tokenizer=None, eos_id=None, sample_prompt="\n", keep_last_checkpoints: int = 2):
     os.makedirs(os.path.join(cfg.out_dir, "checkpoints"), exist_ok=True)
     os.makedirs(os.path.join(cfg.out_dir, "samples"), exist_ok=True)
     os.makedirs(os.path.join(cfg.out_dir, "logs"), exist_ok=True)
@@ -107,8 +127,20 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
         start_step = ckpt.get("step", 0)
         best_val = ckpt.get("best_val", float("inf"))
         log = ckpt.get("log", log)
+        # restore RNG state where available so a resumed run continues the same stream
+        try:
+            if ckpt.get("torch_rng_state") is not None:
+                torch.set_rng_state(ckpt["torch_rng_state"].to("cpu") if hasattr(ckpt["torch_rng_state"], "to")
+                                    else ckpt["torch_rng_state"])
+            if ckpt.get("numpy_rng_state") is not None:
+                np.random.set_state(ckpt["numpy_rng_state"])
+            if device == "cuda" and ckpt.get("cuda_rng_state") is not None:
+                torch.cuda.set_rng_state_all(ckpt["cuda_rng_state"])
+        except Exception as e:
+            if verbose:
+                print(f"[resume] RNG restore skipped ({e!r})")
         if verbose:
-            print(f"[resume] from step {start_step} (best_val={best_val:.4f})")
+            print(f"[resume] from step {start_step} (best_val={best_val:.4f}); RNG restored")
 
     gen = torch.Generator().manual_seed(cfg.seed + start_step)
     model.train()
@@ -168,12 +200,13 @@ def train(model, datasets, cfg: ShnuConfig, device: str,
             if verbose:
                 print(f"  >> sample @ {step}: {sample[:120]!r}")
 
-        # periodic checkpoint
+        # periodic checkpoint (bounded storage: keep only the newest `keep_last_checkpoints`)
         if step > 0 and step % cfg.checkpoint_interval == 0:
             save_checkpoint(os.path.join(cfg.out_dir, "checkpoints", f"checkpoint_step_{step:06d}.pt"),
                             model, optimizer, cfg, step, best_val, log)
             save_checkpoint(os.path.join(cfg.out_dir, "checkpoints", "checkpoint_latest.pt"),
                             model, optimizer, cfg, step, best_val, log)
+            prune_checkpoints(os.path.join(cfg.out_dir, "checkpoints"), keep_last_checkpoints)
 
     # final eval + checkpoint
     metrics = estimate_loss(model, datasets, cfg, gen, ctx)
