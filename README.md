@@ -99,6 +99,15 @@ For multi-session Colab runs there is a one-cell launcher/resumer
 the gates, reconciles the status, and resumes from the newest checkpoint — safe to
 re-run after any disconnect; see [`docs/LAUNCHER.md`](docs/LAUNCHER.md).
 
+The run can also continue on **other legitimate free GPUs** (e.g. Kaggle) through the
+same shared launch core, one checkpoint format, and one resume path, so a session on
+any platform resumes from the same newest valid checkpoint. Kaggle (which cannot mount
+Google Drive) moves the checkpoint as a checksum-verified bundle that can never
+overwrite a newer or valid checkpoint with an older or corrupt one. A safe benchmark
+(`scripts/benchmark.py`) measures a runtime's throughput without ever touching the real
+checkpoint. See [`docs/FREE_GPU_OPTIONS.md`](docs/FREE_GPU_OPTIONS.md) and
+[`docs/MULTI_PLATFORM_TRAINING.md`](docs/MULTI_PLATFORM_TRAINING.md).
+
 ## Limitations
 
 SHNU-LLM v0.1 is a small model trained on a small amount of text for a short schedule. It is **not** comparable to large frontier language models and will not answer general questions reliably. It produces locally fluent but often globally incoherent text, has no instruction-following, alignment, or factual grounding, and reflects the characteristics of its training corpus. It is a foundation and a pipeline, not a product.
@@ -124,14 +133,17 @@ SHNU-LLM/
 ├── LICENSE
 ├── pyproject.toml
 ├── requirements.txt
-├── src/shnu_llm/        # library: config, model, tokenizer, data, training, evaluation, preflight
-├── scripts/             # train.py, prepare_data.py, pilot.py, resume.py, train_v0_2.py, training_plan.py
+├── src/shnu_llm/        # library: config, model, tokenizer, data, training, evaluation, preflight,
+│                        #   status, platform, launcher_core, checkpoint_safety, benchmark
+├── scripts/             # train.py, prepare_data.py, pilot.py, resume.py, train_v0_2.py, training_plan.py,
+│                        #   colab_launch.py, kaggle_launch.py, benchmark.py, status.py
 ├── tokenizer/           # tokenizer training CLI
 ├── evaluation/          # deterministic evaluation CLI + fixed prompt spec
 ├── configs/             # smoke.json, t4.json, v0.2.json
 ├── notebooks/           # SHNU_LLM_From_Scratch.ipynb
 ├── tests/               # smoke, recovery, evaluation, and preflight tests
-└── docs/                # DATASET, TRAINING_PLAN, RECOVERY, MONITORING, EVALUATION, FINAL_REPORT
+└── docs/                # DATASET, TRAINING_PLAN, RECOVERY, MONITORING, EVALUATION, FINAL_REPORT,
+                         #   LAUNCHER, FREE_GPU_OPTIONS, MULTI_PLATFORM_TRAINING
 ```
 
 Trained checkpoints and large model files are kept out of version control (see `.gitignore`); store them in Google Drive or a model registry.
