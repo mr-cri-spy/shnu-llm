@@ -76,3 +76,16 @@ CONFIRM_LONG_RUN = True
 ```
 
 and run the cell on a runtime with a real T4. Until then every run of the cell is a safe dry run that verifies, gates, reconciles, and stops.
+
+## Other platforms (Kaggle, ...)
+
+This cell is the **Colab** launcher. The same run can also continue on Kaggle,
+which cannot mount Google Drive and so moves the checkpoint as a verified bundle.
+Both launchers share one core (`shnu_llm.launcher_core`), one checkpoint format,
+and one resume path — a session on either platform continues from the same newest
+valid checkpoint. See [`MULTI_PLATFORM_TRAINING.md`](MULTI_PLATFORM_TRAINING.md)
+for the Kaggle one-cell launcher and the export/import bridge, and
+[`FREE_GPU_OPTIONS.md`](FREE_GPU_OPTIONS.md) for the service comparison. To decide
+whether a given free runtime is worth a session, `python scripts/benchmark.py`
+measures its throughput safely (fresh random model, synthetic data, writes
+nothing — it never touches the real checkpoint).

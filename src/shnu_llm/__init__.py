@@ -31,6 +31,16 @@ from .status import (
     TrainingStatus, tokens_per_step, current_git_commit,
     VALID_STATES, STATUS_SCHEMA_VERSION, DEFAULT_RUN_NAME,
 )
+from .checkpoint_safety import (
+    sha256_file, inspect_checkpoint, validate_checkpoint, decide_replace,
+    choose_authoritative, expected_param_count,
+    build_bundle_manifest, export_run_bundle, import_run_bundle,
+)
+from .platform import (
+    Platform, COLAB, KAGGLE, GENERIC, get_platform, detect_platform, describe_gpu,
+)
+from .launcher_core import run_launch, verify_code, DEFAULT_EXPECTED
+from .benchmark import benchmark_throughput, estimate_completion
 
 __version__ = "0.1.0"
 __all__ = [
@@ -45,4 +55,10 @@ __all__ = [
     "require_free_disk", "verify_dataset", "verify_tokenizer", "verify_checkpoint",
     "TrainingStatus", "tokens_per_step", "current_git_commit",
     "VALID_STATES", "STATUS_SCHEMA_VERSION", "DEFAULT_RUN_NAME",
+    "sha256_file", "inspect_checkpoint", "validate_checkpoint", "decide_replace",
+    "choose_authoritative", "expected_param_count",
+    "build_bundle_manifest", "export_run_bundle", "import_run_bundle",
+    "Platform", "COLAB", "KAGGLE", "GENERIC", "get_platform", "detect_platform", "describe_gpu",
+    "run_launch", "verify_code", "DEFAULT_EXPECTED",
+    "benchmark_throughput", "estimate_completion",
 ]
