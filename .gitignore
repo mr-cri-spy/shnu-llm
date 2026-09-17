@@ -24,3 +24,7 @@ data/
 
 # OS
 .DS_Store
+
+# SHNU model artifacts
+artifacts/
+*.tar.gz
