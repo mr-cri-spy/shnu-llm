@@ -53,7 +53,31 @@ def test_eval_suite_runs_and_is_deterministic():
     print("eval suite OK:", ppl)
 
 
+def test_bits_per_byte_matches_hand_computed_value():
+    out = tempfile.mkdtemp()
+    tok, docs = _tok(out)
+    ids = tok.encode(docs[0]).ids
+    text = tok.decode(ids)
+    nats = 1.2345
+    result = S.bits_per_byte(nats, tok, ids)
+    expected_bytes = len(text.encode("utf-8"))
+    expected_bpb = nats * (len(ids) / expected_bytes) / np.log(2)
+    assert result["total_tokens"] == len(ids)
+    assert result["total_bytes"] == expected_bytes
+    assert abs(result["bits_per_byte"] - expected_bpb) < 1e-6
+
+
+def test_bits_per_byte_zero_loss_is_zero_bpb():
+    out = tempfile.mkdtemp()
+    tok, docs = _tok(out)
+    ids = tok.encode(docs[0]).ids
+    result = S.bits_per_byte(0.0, tok, ids)
+    assert result["bits_per_byte"] == 0.0
+
+
 if __name__ == "__main__":
     test_repetition_metrics()
     test_eval_suite_runs_and_is_deterministic()
+    test_bits_per_byte_matches_hand_computed_value()
+    test_bits_per_byte_zero_loss_is_zero_bpb()
     print("PASS")

@@ -9,6 +9,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .config import ShnuConfig
+from .decoding import (
+    apply_repetition_penalty, block_repeated_ngrams, top_p_filter, enforce_min_new_tokens,
+)
 
 
 class RMSNorm(nn.Module):
@@ -170,12 +173,28 @@ class ShnuLM(nn.Module):
     @torch.no_grad()
     def generate(self, idx, max_new_tokens: int, temperature: float = 1.0,
                  top_k: Optional[int] = None, top_p: Optional[float] = None,
-                 eos_id: Optional[int] = None):
+                 eos_id: Optional[int] = None,
+                 repetition_penalty: Optional[float] = None,
+                 no_repeat_ngram_size: Optional[int] = None,
+                 min_new_tokens: Optional[int] = None):
+        """Autoregressively sample `max_new_tokens` continuation tokens.
+
+        `repetition_penalty`, `no_repeat_ngram_size`, and `min_new_tokens` are
+        additive, opt-in controls (see decoding.py): every one of them
+        defaults to None/off, so a call that only passes
+        temperature/top_k/top_p/eos_id behaves exactly as it did before these
+        parameters existed.
+        """
         self.eval()
+        prompt_len = idx.size(1)
         for _ in range(max_new_tokens):
             idx_cond = idx[:, -self.cfg.block_size:]
             logits, _ = self(idx_cond)
             logits = logits[:, -1, :]
+            num_generated = idx.size(1) - prompt_len
+            logits = apply_repetition_penalty(logits, idx, repetition_penalty)
+            logits = block_repeated_ngrams(logits, idx, no_repeat_ngram_size)
+            logits = enforce_min_new_tokens(logits, num_generated, min_new_tokens, eos_id)
             if temperature <= 0:                        # greedy
                 next_id = torch.argmax(logits, dim=-1, keepdim=True)
             else:
@@ -184,13 +203,7 @@ class ShnuLM(nn.Module):
                     v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
                     logits[logits < v[:, [-1]]] = -float("inf")
                 if top_p is not None:
-                    sorted_logits, sorted_idx = torch.sort(logits, descending=True)
-                    probs = F.softmax(sorted_logits, dim=-1)
-                    cum = torch.cumsum(probs, dim=-1)
-                    mask = cum - probs > top_p
-                    sorted_logits[mask] = -float("inf")
-                    logits = torch.full_like(logits, -float("inf")).scatter(
-                        1, sorted_idx, sorted_logits)
+                    logits = top_p_filter(logits, top_p)
                 probs = F.softmax(logits, dim=-1)
                 next_id = torch.multinomial(probs, num_samples=1)
             idx = torch.cat([idx, next_id], dim=1)
