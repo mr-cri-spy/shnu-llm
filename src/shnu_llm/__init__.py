@@ -17,11 +17,15 @@ from .training import (
     train, prune_checkpoints,
 )
 from .generation import sample_text
+from .decoding import (
+    apply_repetition_penalty, block_repeated_ngrams, top_p_filter, enforce_min_new_tokens,
+)
 from .persistence import (
     find_latest_checkpoint, verify_checkpoint_compatible, checkpoint_step,
 )
 from .evaluation import (
     validation_perplexity, repetition_metrics, context_length_test, evaluate_generation,
+    bits_per_byte,
 )
 from .preflight import (
     PreflightError, run_preflight, require_gpu, require_drive_mounted, require_free_disk,
@@ -49,8 +53,10 @@ __all__ = [
     "SPECIAL_TOKENS", "train_tokenizer", "load_tokenizer", "encode", "decode",
     "ShnuLM", "get_lr", "configure_optimizer", "estimate_loss",
     "save_checkpoint", "load_checkpoint", "train", "prune_checkpoints", "sample_text",
+    "apply_repetition_penalty", "block_repeated_ngrams", "top_p_filter", "enforce_min_new_tokens",
     "find_latest_checkpoint", "verify_checkpoint_compatible", "checkpoint_step",
     "validation_perplexity", "repetition_metrics", "context_length_test", "evaluate_generation",
+    "bits_per_byte",
     "PreflightError", "run_preflight", "require_gpu", "require_drive_mounted",
     "require_free_disk", "verify_dataset", "verify_tokenizer", "verify_checkpoint",
     "TrainingStatus", "tokens_per_step", "current_git_commit",

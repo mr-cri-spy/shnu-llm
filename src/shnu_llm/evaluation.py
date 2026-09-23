@@ -79,6 +79,43 @@ def context_length_test(model, cfg, device, lengths: Optional[list[int]] = None)
     return out
 
 
+def bits_per_byte(val_loss_nats: float, tokenizer, val_token_ids) -> dict:
+    """Tokenizer-independent bits-per-byte (BPB) for a validation loss.
+
+    BPB = (mean validation loss in nats) * (total validation tokens /
+    total UTF-8 bytes of that same validation text) / ln(2)
+
+    This re-expresses the model's per-token cross-entropy (which depends on
+    vocab size and how densely this tokenizer packs text into tokens) as a
+    per-byte quantity, which is comparable across models that use different
+    tokenizers. Bytes are counted by decoding the validation token stream
+    back to text with this run's own tokenizer and UTF-8-encoding the
+    result -- the only text representation available for the packed
+    `.npy` validation stream, so this *is* the validation text, not a
+    substitute for it.
+
+    Args:
+        val_loss_nats: mean validation loss (nats/token) from
+            `validation_perplexity`'s "val_loss", or equivalent.
+        tokenizer: the tokenizer used to produce `val_token_ids` (must
+            support `.decode(ids) -> str`, e.g. a `tokenizers.Tokenizer`).
+        val_token_ids: the validation token id stream (e.g. the `.npy`
+            array loaded for the "val" split) -- any object accepting
+            `list(...)` of ints.
+
+    Returns:
+        {"bits_per_byte": float, "total_tokens": int, "total_bytes": int}
+    """
+    ids = list(int(i) for i in val_token_ids)
+    text = tokenizer.decode(ids)
+    total_bytes = len(text.encode("utf-8"))
+    total_tokens = len(ids)
+    if total_bytes == 0:
+        return {"bits_per_byte": float("nan"), "total_tokens": total_tokens, "total_bytes": 0}
+    bpb = val_loss_nats * (total_tokens / total_bytes) / math.log(2)
+    return {"bits_per_byte": round(bpb, 6), "total_tokens": total_tokens, "total_bytes": total_bytes}
+
+
 @torch.no_grad()
 def evaluate_generation(model, tokenizer, cfg, device, prompts: list[str],
                         max_new_tokens: int = 80, eos_id: Optional[int] = None) -> list[dict]:

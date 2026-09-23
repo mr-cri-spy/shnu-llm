@@ -62,12 +62,16 @@ def main():
         model.load_state_dict(ck["model"])
         loaded = f"{os.path.basename(args.checkpoint)} @ step {ck.get('step')}"
 
+    perplexity = S.validation_perplexity(model, datasets, cfg, device, spec.get("eval_iters", 100))
     report = {
         "checkpoint": loaded,
         "model_parameters": model.num_params(),
         "vocab_size": cfg.vocab_size,
         "device": S.env_report(device),
-        "perplexity": S.validation_perplexity(model, datasets, cfg, device, spec.get("eval_iters", 100)),
+        "perplexity": perplexity,
+        # BPB re-expresses val_loss (nats/token, tokenizer-dependent) as a
+        # tokenizer-independent bits/byte figure -- see bits_per_byte() docstring.
+        "bits_per_byte": S.bits_per_byte(perplexity["val_loss"], tok, va),
         "context_length_test": S.context_length_test(model, cfg, device, spec.get("context_lengths")),
         "generation": S.evaluate_generation(model, tok, cfg, device, spec["prompts"],
                                             spec.get("max_new_tokens", 80), eos_id=eos_id),
@@ -82,7 +86,8 @@ def main():
     # console summary (compact)
     print(json.dumps({k: report[k] for k in
                       ["checkpoint", "model_parameters", "vocab_size",
-                       "perplexity", "mean_repeated_ngram_frac"]}, indent=2, default=str))
+                       "perplexity", "bits_per_byte", "mean_repeated_ngram_frac"]},
+                      indent=2, default=str))
     print("context_length_test:", report["context_length_test"])
     for g in report["generation"][:3]:
         print(f"  [{g['prompt']!r}] -> {g['text'][:80]!r} rep={g['repetition']['repeated_ngram_frac']}")
