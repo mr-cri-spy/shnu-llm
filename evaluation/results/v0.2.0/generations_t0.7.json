@@ -1,0 +1,46 @@
+{
+  "checkpoint_step": 20000,
+  "checkpoint_path": "/kaggle/input/notebooks/kirancrispy/shnu-v02/checkpoints/checkpoint_latest.pt",
+  "checkpoint_root": "/kaggle/input/notebooks/kirancrispy/shnu-v02",
+  "checkpoint_sha256": "9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e",
+  "seed": 1337,
+  "temperature": 0.7,
+  "top_k": 50,
+  "max_new_tokens": 60,
+  "device": "cpu",
+  "torch_version": "2.10.0+cpu",
+  "prompts": [
+    {
+      "prompt": "The history of",
+      "generated": "The history of the Roman Empire . \n The Roman army was led by the Roman general Aubergeurs , who commanded a regiment of the Roman army in the first three years of the war . The Roman army was composed mostly of Roman infantry , and was capable of defending the city . The Roman army was sent"
+    },
+    {
+      "prompt": "In the early years",
+      "generated": "In the early years of the series . \n The first novel was written in 1994 , and the third book was written by Mike Ratti and Joshua Hahn , with Tom Glaser . The second novel is the novel , which focuses on the lives of a single maid , and the fourth , Gai"
+    },
+    {
+      "prompt": "Scientists have discovered that",
+      "generated": "Scientists have discovered that they are very much more likely to have a similar relationship . The researchers show that a large number of individuals may have been involved in the study of the genome . \n = = = Introduction of DNA ( MMR ) and genome sequencing = = = \n The DNA"
+    },
+    {
+      "prompt": "The city of",
+      "generated": "The city of Los Angeles . The city is located on the main island of the Cid Sanctuary , near the Cid Sanctuary and is home to the Cid Sanctuary , which represents the Cid Sanctuary and the Baghdad Triptych . \n The Cid Sanctuary has"
+    },
+    {
+      "prompt": "According to the report,",
+      "generated": "According to the report,000 + ≈ XL2 + 1 . The report also clarified that it was \" reasonably sensitive to the existence of the common law \" . \n = = = = Deficit , or \" special case \" , \" special case \" = = = \n The report"
+    },
+    {
+      "prompt": "One of the most important",
+      "generated": "One of the most important and influential people in the world . \n In the mid @-@ 20th century , the popularity of the word was so popular that it became the common word for \" the word \" in the early twentieth century and the term \" the word \" in the modern sense . The word \" the word \" was"
+    },
+    {
+      "prompt": "During the war,",
+      "generated": "During the war,000th anniversary of the war . \n The War of the First Coalition is a political science fiction television series that is syndicated in broadcasting regions across the world . The series was created by Michael Bay , who was the executive producer of the series . The series was created by series creator"
+    },
+    {
+      "prompt": "The theory suggests that",
+      "generated": "The theory suggests that they are the most significant of the theory . In the mid @-@ 20th century , the theory of evolution was challenged by J. Gordon Brown , who proposed that evolution was the result of its early evolution . Brown also developed an analogy for evolution , which was developed in the 1940s and 1950s"
+    }
+  ]
+}

@@ -1,0 +1,538 @@
+{
+  "checkpoint_step": 20000,
+  "checkpoint": "/tmp/shnu-v020-verify/checkpoints/checkpoint_latest.pt",
+  "seed": 1337,
+  "max_new_tokens": 60,
+  "device": "cpu",
+  "prompt_count": 8,
+  "configs": {
+    "D0": {
+      "settings": {
+        "temperature": 0.0,
+        "top_k": null,
+        "top_p": null,
+        "repetition_penalty": null,
+        "no_repeat_ngram_size": null
+      },
+      "mean_repeated_ngram_frac": 0.095366,
+      "distinct_1": 0.843823,
+      "distinct_2": 0.882014,
+      "mean_generated_length": 16.625,
+      "eos_hit_rate": 0.875,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the United States . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the game , and the game was released in the United States in March 2006 . \n",
+          "generated_token_count": 19,
+          "eos_hit": true,
+          "distinct_1": 0.7894736842105263,
+          "distinct_2": 0.9444444444444444,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that the most important of the three are the two major groups of the three groups , the two groups of the three groups , the two groups of the three groups , and the two groups of the three groups of the three groups , the two groups of the three groups of the three groups of the three groups",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.18333333333333332,
+          "distinct_2": 0.288135593220339,
+          "repeated_ngram_frac": 0.6379310344827587
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of the city . \n",
+          "generated_token_count": 5,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000th . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important of the early 20th century . \n",
+          "generated_token_count": 9,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th victory in the war . \n",
+          "generated_token_count": 10,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the theory of evolution is more likely to be influenced by the theory of evolution . \n",
+          "generated_token_count": 18,
+          "eos_hit": true,
+          "distinct_1": 0.7777777777777778,
+          "distinct_2": 0.8235294117647058,
+          "repeated_ngram_frac": 0.125
+        }
+      ]
+    },
+    "D1": {
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null,
+        "repetition_penalty": null,
+        "no_repeat_ngram_size": null
+      },
+      "mean_repeated_ngram_frac": 0.155802,
+      "distinct_1": 0.697083,
+      "distinct_2": 0.795202,
+      "mean_generated_length": 35.75,
+      "eos_hit_rate": 0.75,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the Roman Empire . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the game ; while others were concerned about the use of the game 's cover against the game 's online multiplayer , the game was still called \" The Unification Engine \" . The cover was updated and updated to reflect the game 's design . \n",
+          "generated_token_count": 53,
+          "eos_hit": true,
+          "distinct_1": 0.6226415094339622,
+          "distinct_2": 0.8269230769230769,
+          "repeated_ngram_frac": 0.0980392156862745
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that the film may be a set of real time drama films . \n",
+          "generated_token_count": 14,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of Sagami , and the Mantra area . The city 's main street , located on the eastern side of the city , is an important arterial street . The city has had a rapid growth , yet as a result of the growth of the city 's population the city has had",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.6166666666666667,
+          "distinct_2": 0.8305084745762712,
+          "repeated_ngram_frac": 0.06896551724137934
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000,000,000,000 ( $ 1 @.@ 2 million ) \n",
+          "generated_token_count": 20,
+          "eos_hit": true,
+          "distinct_1": 0.6,
+          "distinct_2": 0.631578947368421,
+          "repeated_ngram_frac": 0.33333333333333337
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important of the two . He is also the only person to have held the highest rank ; he is the only person who has received a Nobel Prize , and the only person to have received the Nobel Prize in Economic Sciences . \n",
+          "generated_token_count": 46,
+          "eos_hit": true,
+          "distinct_1": 0.6521739130434783,
+          "distinct_2": 0.8444444444444444,
+          "repeated_ngram_frac": 0.09090909090909094
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th anniversary of the launch of the first version of the LaserDisc was released on December 7 , 2012 . \n",
+          "generated_token_count": 27,
+          "eos_hit": true,
+          "distinct_1": 0.8518518518518519,
+          "distinct_2": 0.9230769230769231,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the presence of the Baukitō @-@ kyō @-@ ryō in the early Baukitō @-@ kyō @-@ kyō @-@ ryō @-@ ryō @-@ ryō @-@ ryō @-@ ryō @-@ ryō @-@ ry",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.23333333333333334,
+          "distinct_2": 0.3050847457627119,
+          "repeated_ngram_frac": 0.6551724137931034
+        }
+      ]
+    },
+    "D2": {
+      "settings": {
+        "temperature": 0.7,
+        "top_k": null,
+        "top_p": 0.9,
+        "repetition_penalty": null,
+        "no_repeat_ngram_size": null
+      },
+      "mean_repeated_ngram_frac": 0.032539,
+      "distinct_1": 0.803973,
+      "distinct_2": 0.937256,
+      "mean_generated_length": 36.0,
+      "eos_hit_rate": 0.625,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the Roman Empire . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the novel ; while others were educated at the time , it was widely believed that the novel had been rejected by the authorities . The novel was published in the United States on July 15 , 1918 , by T. E. W. M. van der Rohe , and in the United Kingdom by",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.7,
+          "distinct_2": 0.9491525423728814,
+          "repeated_ngram_frac": 0.017241379310344862
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that it is a non @-@ toxic substance , and they are able to be removed from the body after the skin is removed . \n",
+          "generated_token_count": 26,
+          "eos_hit": true,
+          "distinct_1": 0.8846153846153846,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of Dayton . \n",
+          "generated_token_count": 4,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000 @-@ D ) . In August 2013 , a statement by the Department of Interior , a federal agency based in Kansas , suggested that the statement was \" under the guise of the report and the language of the report \" . The report also concluded that the report was not conclusive and that",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.65,
+          "distinct_2": 0.9152542372881356,
+          "repeated_ngram_frac": 0.017241379310344862
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important work of the 19th century , and has been translated into more than 100 languages . \n",
+          "generated_token_count": 19,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th victory in the Red Wings . He also received a funeral for service at the White House , attended by Prime Minister Stanley Baldwin , Prime Minister Stanley Baldwin and Prime Minister Stanley Baldwin . Baldwin 's funeral service was attended by many of the veterans of the war , including Warwick Armstrong , Winston",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.65,
+          "distinct_2": 0.864406779661017,
+          "repeated_ngram_frac": 0.06896551724137934
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the family of the related mujahideen was the ancestor of the Proteinid family , the first known mujahideen . However , the hypothesis of a group of mujahideen is not well known . \n",
+          "generated_token_count": 53,
+          "eos_hit": true,
+          "distinct_1": 0.5471698113207547,
+          "distinct_2": 0.7692307692307693,
+          "repeated_ngram_frac": 0.1568627450980392
+        }
+      ]
+    },
+    "D3": {
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null,
+        "repetition_penalty": 1.2,
+        "no_repeat_ngram_size": null
+      },
+      "mean_repeated_ngram_frac": 0.0,
+      "distinct_1": 0.890241,
+      "distinct_2": 0.986431,
+      "mean_generated_length": 30.375,
+      "eos_hit_rate": 0.75,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the Roman Empire . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the game ; while others were concerned about the use of a single player , they focused on the need for more freedom . \n",
+          "generated_token_count": 27,
+          "eos_hit": true,
+          "distinct_1": 0.8888888888888888,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that the world has been lost . After the death of his son , Alma , he was moved to Pakistan . \n",
+          "generated_token_count": 24,
+          "eos_hit": true,
+          "distinct_1": 0.875,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of Portland , including the site of the North East Didsbury Festival . \n",
+          "generated_token_count": 16,
+          "eos_hit": true,
+          "distinct_1": 0.9375,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000,0021 . The report was eventually passed up in April 2002 and published in 2002 as part of the National Elevations and Regulatory Commission 's Guide , for which it is a member of the NOC . It is one of three to be submitted by a federal court",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.8333333333333334,
+          "distinct_2": 0.9830508474576272,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important members of the community , including the head of the church 's mission , Dr. Halda of Durham . He is also the sole member of the Scottish Church and one of the most significant figures of the Roman Catholic Church in Scotland , an Irish man who was executed by the Lord Chancellor for",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.75,
+          "distinct_2": 0.9322033898305084,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th prototype . \n",
+          "generated_token_count": 7,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the influence of Sage and his wife , Lara Gale ( née Hagel ) , may have influenced the idea that Sage 's father was the first to introduce her to the world . \n",
+          "generated_token_count": 43,
+          "eos_hit": true,
+          "distinct_1": 0.8372093023255814,
+          "distinct_2": 0.9761904761904762,
+          "repeated_ngram_frac": 0.0
+        }
+      ]
+    },
+    "D4": {
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null,
+        "repetition_penalty": null,
+        "no_repeat_ngram_size": 3
+      },
+      "mean_repeated_ngram_frac": 0.0,
+      "distinct_1": 0.833879,
+      "distinct_2": 0.951858,
+      "mean_generated_length": 21.75,
+      "eos_hit_rate": 0.875,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the Roman Empire . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the game ; while others were concerned about the use of the same players as in other games , they worked hard to maintain a quality that they called \" the weakest part of the time \" . \n",
+          "generated_token_count": 42,
+          "eos_hit": true,
+          "distinct_1": 0.8095238095238095,
+          "distinct_2": 0.9512195121951219,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that the \" hardest \" is the \" most \" character in the series . \n",
+          "generated_token_count": 17,
+          "eos_hit": true,
+          "distinct_1": 0.7058823529411765,
+          "distinct_2": 0.9375,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of Paris , and is the birthplace of the French writer , Jean @-@ Marie Maud . The book 's title is a reference to the French philosopher , Michelangelo , who was a member of a group of French philosophers and philosophers . The character of the book ' notwithstanding",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.6166666666666667,
+          "distinct_2": 0.8983050847457628,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000th . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important elements of the album . \n",
+          "generated_token_count": 7,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th victory of the Battle of the Barracks . \n",
+          "generated_token_count": 14,
+          "eos_hit": true,
+          "distinct_1": 0.8571428571428571,
+          "distinct_2": 0.9230769230769231,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the term \" the work of the common man \" was used to describe the development of the work . \n",
+          "generated_token_count": 22,
+          "eos_hit": true,
+          "distinct_1": 0.6818181818181818,
+          "distinct_2": 0.9047619047619048,
+          "repeated_ngram_frac": 0.0
+        }
+      ]
+    },
+    "D5": {
+      "settings": {
+        "temperature": 0.7,
+        "top_k": null,
+        "top_p": 0.9,
+        "repetition_penalty": 1.2,
+        "no_repeat_ngram_size": 3
+      },
+      "mean_repeated_ngram_frac": 0.0,
+      "distinct_1": 0.944857,
+      "distinct_2": 0.997159,
+      "mean_generated_length": 25.0,
+      "eos_hit_rate": 0.875,
+      "prompts": [
+        {
+          "prompt": "The history of",
+          "text": "The history of the Roman Empire . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "In the early years",
+          "text": "In the early years of the novel ; while others were educated at home , he was sent to work as a teacher and school administrator . \n",
+          "generated_token_count": 26,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "text": "Scientists have discovered that the idea of a widespread belief system is an alternative to the practice of using a non @-@ governmental organization , particularly to communicate with other nations and governments . \n",
+          "generated_token_count": 33,
+          "eos_hit": true,
+          "distinct_1": 0.8787878787878788,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The city of",
+          "text": "The city of Paris , and is the birthplace of the French writer , Jean @-@ Marie Maud . The composer 's name was derived from the Dutch word for \" peach \" in English . In August 2013 a poll conducted by the National Association for the Advancement of Colored People ( NAACP",
+          "generated_token_count": 60,
+          "eos_hit": false,
+          "distinct_1": 0.85,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "According to the report,",
+          "text": "According to the report,000th . \n",
+          "generated_token_count": 6,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "One of the most important",
+          "text": "One of the most important elements of the album . \n",
+          "generated_token_count": 7,
+          "eos_hit": true,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "During the war,",
+          "text": "During the war,000th victory of his career , and received a gold medal in the 100 metres relay . He was also awarded an Olympic gold medal as Germany 's sole member of Team Nouméa in 2010 . \n",
+          "generated_token_count": 45,
+          "eos_hit": true,
+          "distinct_1": 0.8888888888888888,
+          "distinct_2": 0.9772727272727273,
+          "repeated_ngram_frac": 0.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "text": "The theory suggests that the New Zealanders could have been more closely related to the main force . \n",
+          "generated_token_count": 17,
+          "eos_hit": true,
+          "distinct_1": 0.9411764705882353,
+          "distinct_2": 1.0,
+          "repeated_ngram_frac": 0.0
+        }
+      ]
+    }
+  }
+}

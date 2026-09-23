@@ -1,0 +1,46 @@
+{
+  "checkpoint_step": 20000,
+  "checkpoint_path": "/kaggle/input/notebooks/kirancrispy/shnu-v02/checkpoints/checkpoint_latest.pt",
+  "checkpoint_root": "/kaggle/input/notebooks/kirancrispy/shnu-v02",
+  "checkpoint_sha256": "9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e",
+  "seed": 1337,
+  "temperature": 1.0,
+  "top_k": 50,
+  "max_new_tokens": 60,
+  "device": "cpu",
+  "torch_version": "2.10.0+cpu",
+  "prompts": [
+    {
+      "prompt": "The history of",
+      "generated": "The history of the Roman Empire ( the Greek term �uscaria , meaning \" Great Sea \" or \" Great Sea \" ) . In addition , the ancient Greek word for \" sea \" refers to its appearance at the time , with an meaning similar to that of the word \" sea \" to be \" Great Sea"
+    },
+    {
+      "prompt": "In the early years",
+      "generated": "In the early years ) in the early 19th century . \n The name \" Zorubin \" was based on the Anglo @-@ Zorubin character Zorubin , but the word Zorubin derives from \" Zorro \" , a word which is derived from the Old English word"
+    },
+    {
+      "prompt": "Scientists have discovered that",
+      "generated": "Scientists have discovered that they are very much more likely to have a similar fate . The same study shows that these facts show that many have been raised and are so well @-@ preserved that their relationships are not well established . However , when a couple agree that they are in a single relationship , the pair will leave without mutual trust"
+    },
+    {
+      "prompt": "The city of",
+      "generated": "The city of Los Angeles . Their first meeting was the annual Halloween Day celebration , held April 28 , 2009 . The second meeting was celebrated with a brief broadcast featuring a live band and a mockumentary . In December 2009 , the LA Weekly reported that \" The LA Weekly ranks among America '"
+    },
+    {
+      "prompt": "According to the report,",
+      "generated": "According to the report,,000th issue . \n When Voorhis joined the board of directors in 1950 , he was appointed to the board of directors . At the time , he was head of the firm . In his later capacity , he had a \" bike board \" . Voorhis '"
+    },
+    {
+      "prompt": "One of the most important",
+      "generated": "One of the most important and influential figures in the development of the game industry ( e.g. , a large group of players ) . For example , IGN suggested that the game \" was the best part of its early and contemporary appeal , with an array of innovations and innovations , particularly the use of \" ;"
+    },
+    {
+      "prompt": "During the war,",
+      "generated": "During the war,,000th victim . \n When Vichy France attacked Cuba in April 1960 , the CIA ordered a \" PIAT \" operation to allow agents to investigate the possibility of its involvement at the Kennedy Space Center . The CIA had earlier called the organization \" CIA @-@ affiliated \" , but did"
+    },
+    {
+      "prompt": "The theory suggests that",
+      "generated": "The theory suggests that they are very much more likely to have originated earlier than before , due to the use of their longitudinal brachycephalian adaptations . The first specimen was identified in 2011 , and an abnormal skull had yet to be seen in Eocene mammals . However , the discovery of Gaus"
+    }
+  ]
+}

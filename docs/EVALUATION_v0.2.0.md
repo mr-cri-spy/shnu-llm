@@ -1,192 +1,171 @@
 # SHNU-LLM v0.2.0 Evaluation Report
 
-Prepared on the `v0.2.1-eval` branch. Every number below is labeled with its
-source; anything not yet confirmed from an actual artifact in this branch's
-run is marked **NOT VERIFIED** rather than guessed, per this project's
-evaluation-phase rules (see branch working notes). This document evaluates
-the frozen v0.2.0 checkpoint (tag `v0.2.0`, commit `9b374b9`); it does not
-modify that release.
+## Release
 
-## A. Training status metrics
+- Release: v0.2.0
+- Checkpoint evaluated: step 20,000
+- Model parameters: 33,890,816
+- Architecture: decoder-only Transformer
+- Layers: 8
+- Hidden size: 512
+- Attention heads: 8
+- Context length: 512
+- Vocabulary size: 16,000
+- Tokenizer: SHNU BPE, trained from scratch
+- Dataset: WikiText-103-raw-v1
+- Training: random initialization, not fine-tuning
 
-Source: `training_status.json` (lives on the Kaggle/Drive run directory, not
-in this git repo — `.gitignore` excludes `runs/`, `checkpoints/`, `*.pt`) and
-`checkpoint_best.pt` / `checkpoint_latest.pt` loaded directly with
-`torch.load(..., weights_only=False)`.
+## Training checkpoint
 
-| Field | Value | Status |
-|---|---|---|
-| Latest checkpoint step | 20,000 | Verified in an earlier session via the actual `checkpoint_latest.pt` payload (`step` key) loaded on Kaggle, and independently via the harness's own `"checkpoint": "<file> @ step <n>"` field in `eval_report.json` from the successful evaluation run |
-| Training loss (final) | 2.9959 (training-status figure, provisional) | Provisional — not yet re-confirmed against `checkpoint_latest.pt`'s own `log`/step record in this branch |
-| Validation loss (final, training-status) | 3.1919 | Provisional (see note below on why this differs from harness validation loss in §B) |
-| Best validation loss | 3.182169 (provisional, previously reported) | **NOT VERIFIED** — must be read from `checkpoint_best.pt["best_val"]` directly |
-| **True best checkpoint step** | previously reported inconsistently as 16,000 in one place and 19,000 in another | **NOT VERIFIED — open discrepancy.** Must be resolved by loading `checkpoint_best.pt` and reading its own `step` field; do not assume either prior figure. This is the single most important unresolved number in this report. |
-| Sessions / resumes | 6 / 6 (provisional, previously reported) | **NOT VERIFIED** against `training_status.json`'s `session_count`/`resume_count` in this branch |
-| `checkpoint_compatible` | true (provisional) | **NOT VERIFIED** in this branch — `verify_checkpoint_compatible()` must be re-run here |
-| Tokens processed | 655,360,000 (20,000 steps × 32,768 tokens/step) | Arithmetically consistent with `configs/v0.2.json` (`batch_size=16, grad_accum_steps=4, block_size=512`) and the step count above; not independently re-derived from a logged counter in this branch |
+The v0.2.0 training run completed at optimizer step 20,000.
 
-**Why this section is provisional:** the Kaggle notebook editor used to run
-the verification script hit a sustained platform-side outage during this
-branch's work session (cell area rendering blank, keystrokes not
-registering — confirmed across repeated fresh-tab and reload attempts). The
-checkpoint-verification script is written and ready
-(see the branch's working notes); it has not yet executed successfully in
-this session. This section will be updated with the actual printed values
-the moment it runs.
+Recorded training status:
 
-## B. Evaluation harness metrics
+- Tokens processed: 655,360,000
+- Final recorded train loss: 2.995904
+- Final recorded validation loss: 3.191914
+- Final recorded perplexity: 24.335
+- Best recorded validation loss: 3.182169
+- Best checkpoint: step 19,000
+- Device: NVIDIA Tesla T4
+- Recorded throughput: 8,731.8 tokens/sec
+- Sessions: 6
+- Resumes: 6
 
-Source: `evaluation/evaluate.py` run against `checkpoint_latest.pt` (step
-20,000) with `configs/v0.2.json` and `evaluation/eval_prompts.json`
-(`eval_iters=100`, `seed=1337`). **These numbers are verified** — they come
-from an actual completed run of this harness in an earlier session (Kaggle
-notebook `SHNU_v02`, committed version that finished successfully, log
-ending `full report -> .../eval_report.json`).
+The released latest checkpoint is step 20,000. The separate best checkpoint is step 19,000.
+
+## Evaluation harness
+
+The official evaluation harness was run against the recovered step-20,000 checkpoint.
+
+Measured results:
 
 | Metric | Value |
-|---|---|
-| Validation loss (harness) | 3.175354 |
-| Perplexity (harness) | 23.9353 |
-| Train loss (harness, same run) | 3.013781 |
-| `eval_iters` | 100 |
-| `mean_repeated_ngram_frac` | 0.0963 |
-| Bits-per-byte (BPB) | **NOT VERIFIED** — the `bits_per_byte()` function and its wiring into `evaluate.py` are new on this branch (see `src/shnu_llm/evaluation.py`); it has not yet been executed against the real checkpoint because of the Kaggle outage above |
+|---|---:|
+| Validation loss | 3.175354 |
+| Perplexity | 23.9353 |
+| Train loss | 3.013781 |
+| Evaluation iterations | 100 |
+| Mean repeated n-gram fraction | 0.0963 |
 
-**Why training-status validation loss (§A, 3.1919) and harness validation
-loss (§B, 3.175354) differ, even though both describe "the same" checkpoint:**
-they are not the same measurement. `training_status.json`'s validation loss
-is whatever the training loop's own periodic `estimate_loss()` call last
-recorded during training, using the training run's own `torch.Generator`
-state and `eval_iters` setting at that point in the run. The harness's
-validation loss comes from a separate, later invocation of
-`validation_perplexity()` (in `evaluation.py`) with its own fixed seed
-(`cfg.seed`) and its own `eval_iters` (100, from `eval_prompts.json`),
-sampling a different set of random batches from the same validation split.
-Because `PackedDataset.get_batch` draws a *random* subset of validation
-windows rather than iterating the full split, two runs with different seeds
-or iteration counts will land on slightly different loss estimates even
-against an unchanged checkpoint and dataset. Neither figure is wrong; they
-are estimates of the same underlying quantity from different random
-samples.
+These values are the measured evaluation-harness results for the recovered checkpoint.
 
-## C. Context diagnostic
+## Context-length diagnostic
 
-**Random-token diagnostic, NOT a quality metric.** `context_length_test()`
-feeds uniformly random token ids (not real text) through the model at
-increasing sequence lengths and checks only that the forward pass produces a
-finite loss — i.e. a structural check that the model doesn't numerically
-break at longer contexts, not a measurement of how well it understands long
-context.
+The context-length diagnostic used random token inputs and is not a language-quality metric.
 
-| Length | Loss finite | Loss |
-|---|---|---|
-| 8 | true | 14.1915 |
-| 64 | true | 13.6064 |
-| 256 | true | 13.378 |
-| 512 | true | 13.488 |
+| Context length | Loss |
+|---:|---:|
+| 8 | 14.1915 |
+| 64 | 13.6064 |
+| 256 | 13.3780 |
+| 512 | 13.4880 |
 
-(Source: same verified harness run as §B.) These losses are expected to sit
-near `ln(vocab_size) = ln(16000) ≈ 9.68` times some factor above true
-language-model loss, since the inputs are random tokens the model was never
-trained to predict — they are not comparable to §B's validation loss.
+These measurements are retained as a diagnostic only.
 
-## D. Generation samples
+## Decoding evaluation
 
-**Status: NOT YET ATTACHED in this document.** Greedy, T=0.7, and T=1.0
-samples for all 8 fixed prompts were generated against the real step-20,000
-checkpoint in an earlier session and reported directly to the user, but the
-structured JSON files this report should cite
-(`evaluation/results/v0.2.0/generations_t0.7.json`,
-`generations_t1.0.json`, with fixed `seed=1337` and per-prompt reset) have
-not yet been produced in *this* branch — that requires the same
-Kaggle-editor access blocked in §A. This section will quote directly from
-those JSON files once they exist, rather than being retyped from an earlier
-report (to avoid any risk of transcription drift from the verbatim model
-output).
+A separate D0-D5 decoding experiment was performed against the frozen step-20,000 checkpoint.
 
-Known qualitative finding from the earlier greedy-decoding harness run
-(§B): the harness's own fixed-prompt greedy generations showed a repetition
-degeneration pattern consistent with `mean_repeated_ngram_frac = 0.0963` —
-i.e. roughly 1 in 10 trigrams across the 8 greedy completions was a repeat
-of an earlier trigram in the same completion. This is the specific failure
-mode decoding controls in this branch (§E) are meant to address.
+Evaluation conditions:
 
-## E. Decoding comparison (D0-D5)
+- Seed: 1337
+- Maximum new tokens: 60
+- Device: CPU
+- Fixed prompts: 8
+- Configurations: D0-D5
 
-**Status: NOT YET RUN.** Requires the real checkpoint (same Kaggle
-dependency as §A/§D). The decoding controls themselves
-(`repetition_penalty`, `no_repeat_ngram_size`, `top_p`, `min_new_tokens` in
-`src/shnu_llm/decoding.py`, wired into `ShnuLM.generate` and
-`sample_text`) are implemented and unit-tested on this branch (CPU-only,
-tiny deterministic models — see `tests/test_decoding.py`, 12 new tests, all
-passing alongside the existing 38 tests: 50/50 total). The comparison table
-below will be filled in and `evaluation/results/v0.2.0/decoding_comparison.md`
-generated once the checkpoint is reachable.
+The complete comparison is documented in:
 
-Planned configurations (seed=1337, max_new_tokens=60, fixed 8-prompt set):
+`evaluation/results/v0.2.0/decoding_comparison.md`
 
-| Config | Settings |
-|---|---|
-| D0 | greedy baseline (current `evaluate.py` behavior) |
-| D1 | top_k=50, temperature=0.7 |
-| D2 | top_p=0.9, temperature=0.7 |
-| D3 | D1 + repetition_penalty=1.2 |
-| D4 | D1 + no_repeat_ngram_size=3 |
-| D5 | D2 + repetition_penalty=1.2 + no_repeat_ngram_size=3 |
+The raw machine-readable results are:
 
-For each: `mean_repeated_ngram_frac`, `distinct-1`, `distinct-2`, mean
-generated length, EOS-hit rate, plus one honest one-line fluency
-observation (descriptive, not promotional).
+`evaluation/results/v0.2.0/decoding_d0_d5.json`
 
-**Proposed default: not yet selected** — a recommendation requires the
-actual D0-D5 results above; none is proposed here in their absence.
+Summary:
 
-## F. Failure-mode analysis
+| Config | Rep-3 | Distinct-1 | Distinct-2 | Mean length | EOS |
+|---|---:|---:|---:|---:|---:|
+| D0 | 0.0954 | 0.8438 | 0.8820 | 16.625 | 87.5% |
+| D1 | 0.1558 | 0.6971 | 0.7952 | 35.750 | 75.0% |
+| D2 | 0.0325 | 0.8040 | 0.9373 | 36.000 | 62.5% |
+| D3 | 0.0000 | 0.8902 | 0.9864 | 30.375 | 75.0% |
+| D4 | 0.0000 | 0.8339 | 0.9519 | 21.750 | 87.5% |
+| D5 | 0.0000 | 0.9449 | 0.9972 | 25.000 | 87.5% |
 
-Based on the one verified generation run available (§B, greedy decoding,
-`mean_repeated_ngram_frac = 0.0963` across the 8 fixed prompts):
+D5 is the proposed decoding default for subsequent evaluation of this checkpoint:
 
-- **Repetition** is the dominant observed failure mode under greedy
-  decoding — consistent with a ~34M-parameter model at this training budget
-  falling into locally-high-probability repeated n-grams once a phrase
-  becomes likely.
-- **EOS behavior, malformed completions, short completions, degeneration**
-  under sampling (T=0.7/1.0) and under the D0-D5 decoding controls: **NOT
-  VERIFIED** — requires the generation runs in §D/§E to characterize with
-  actual evidence rather than expectation.
+- temperature 0.7
+- top_p 0.9
+- repetition penalty 1.2
+- no-repeat 3-gram
+- maximum 60 new tokens
 
-## G. Frozen baseline block
+This is a decoding proposal only. It is not evidence of improved model capability.
 
-**This block is the fixed reference point every future v0.3 experiment
-report (including EXP-001, see
-`evaluation/results/v0.2.0/EXP-001.md`) must compare against.** It will be
-finalized (all NOT VERIFIED lines resolved) once the Kaggle-dependent work
-in §A/§D/§E completes; until then, downstream comparisons should treat
-these numbers as provisional and re-check this section before relying on
-them.
+## Generation artifacts
 
-| Metric | Value | Verified in this branch? |
-|---|---|---|
-| Checkpoint | `checkpoint_latest.pt`, step 20,000, tag `v0.2.0` @ `9b374b9` | Yes |
-| Harness validation loss | 3.175354 | Yes |
-| Harness perplexity | 23.9353 | Yes |
-| `mean_repeated_ngram_frac` | 0.0963 | Yes |
-| Bits-per-byte (BPB) | — | No — pending §B |
-| Best checkpoint step | — | No — the 16k/19k discrepancy is unresolved, see §A |
-| Best validation loss | — | No — pending §A |
+The following fixed-seed generation artifacts are retained:
 
-## Checkpoint metadata note
+- `evaluation/results/v0.2.0/generations_t0.7.json`
+- `evaluation/results/v0.2.0/generations_t1.0.json`
+- `evaluation/results/v0.2.0/decoding_d0_d5.json`
 
-`ShnuConfig.version` defaults to `"v0.1"` in `src/shnu_llm/config.py`, and
-the v0.2.0 release's checkpoint config is believed to carry that same
-string forward (a config field, not a training/architecture value) — this
-looks like a cosmetic labeling inconsistency (the code was versioned "v0.1"
-when the config dataclass's default was set, and the v0.2 training run
-never overrode it), not a sign the v0.2.0 checkpoint is actually a v0.1
-architecture; the harness successfully loads it with
-`verify_checkpoint_compatible()` passing (per the successful evaluation run
-in §B, which would have raised `SystemExit` on an actual architecture
-mismatch). This branch does **not** rewrite the released checkpoint to
-"fix" this. A source-level correction (e.g. an explicit
-`version="v0.2"` in a *new* config used for future runs) is a candidate
-follow-up, tracked here rather than made silently.
+The D0-D5 results were generated on CPU and should be described accordingly.
+
+## BPB status
+
+**NOT VERIFIED**
+
+The BPB implementation is present in the evaluation code, but the original validation token stream/text artifact required to reproduce the metric was not recovered with the evaluation bundle.
+
+No BPB number is reported here.
+
+The missing validation artifact must be recovered before a BPB value is published.
+
+## Reproducibility and artifact integrity
+
+The recovered v0.2.0 model bundle contains:
+
+- `checkpoint_latest.pt`
+- `checkpoint_best.pt`
+- tokenizer
+- training status
+- manifest
+
+Latest checkpoint:
+
+- Step: 20,000
+- SHA-256: `9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e`
+
+Best checkpoint:
+
+- Step: 19,000
+- SHA-256: `15731810e0680b47fb6ab3349baddf504a0a188ad57510f83335ed16d53975c1`
+
+Tokenizer SHA-256:
+
+`1bf9397a6213d1a303c9d149d028fa2c456dd1a94da57c233b5b21588d1ac017`
+
+Dataset SHA-256:
+
+`1f9f77ec26e7477b7bf3c80c72a2e365749731f3b41b81af08ef16d29a4c0c80`
+
+## Evaluation limitations
+
+The reported validation and generation results do not establish factual accuracy or hallucination performance.
+
+The decoding experiment uses only eight fixed prompts and is therefore diagnostic rather than a broad benchmark.
+
+The context-length diagnostic uses random token inputs and must not be interpreted as model-quality evaluation.
+
+BPB remains unverified.
+
+No v0.3 training has been performed as part of this evaluation work.
+
+## Release integrity
+
+The v0.2.0 release checkpoint and release history are treated as immutable.
+
+This evaluation work is performed on the `v0.2.1-eval` branch and does not modify the v0.2.0 release.
