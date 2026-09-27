@@ -1,0 +1,14 @@
+{
+  "status": "OK",
+  "val_loss_nats": 3.175354,
+  "perplexity": 23.9353,
+  "train_loss": 3.013781,
+  "eval_iters": 100,
+  "total_val_tokens": 1181773,
+  "total_val_utf8_bytes": 5203841,
+  "tokens_per_byte": 0.22709629291133224,
+  "bits_per_byte": 1.040343,
+  "byte_counting": "validation token stream decoded with the run's own tokenizer (tok.decode on all val ids), then UTF-8 encoded",
+  "val_npy": "/kaggle/input/datasets/kirancrispy/shnu-llm-v02/datasets-20260915T192929Z-1-001/datasets/wikitext103_val_v16000.npy",
+  "device": "cpu"
+}

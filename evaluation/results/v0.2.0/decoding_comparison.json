@@ -1,0 +1,562 @@
+{
+  "checkpoint": "/kaggle/input/notebooks/kirancrispy/shnu-v02/checkpoints/checkpoint_latest.pt",
+  "checkpoint_sha256": "9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e",
+  "checkpoint_step": 20000,
+  "seed": 1337,
+  "max_new_tokens": 60,
+  "eos_id": 3,
+  "device": "cpu",
+  "torch_version": "2.10.0+cpu",
+  "metric_notes": {
+    "repeated_ngram_frac": "evaluation.repetition_metrics(n=3) on the full decoded text (prompt+completion) re-encoded, same as evaluate.py; averaged over prompts",
+    "distinct_1_2": "unique unigram/bigram ratio over the newly generated token ids only; averaged over prompts",
+    "mean_new_tokens": "number of newly generated tokens (includes the EOS token if emitted)",
+    "eos_hit_rate": "fraction of prompts whose generation emitted <eos> before max_new_tokens"
+  },
+  "configs": [
+    {
+      "name": "D0",
+      "description": "greedy baseline (evaluate.py behavior: temperature=0, eos_id set)",
+      "settings": {
+        "temperature": 0.0,
+        "top_k": null,
+        "top_p": null
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.0837,
+        "distinct_1": 0.8438,
+        "distinct_2": 0.882,
+        "mean_new_tokens": 16.62,
+        "eos_hit_rate": 0.875
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the United States . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the game , and the game was released in the United States in March 2006 . \n",
+          "new_tokens": 19,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.7895,
+          "distinct_2": 0.9444
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that the most important of the three are the two major groups of the three groups , the two groups of the three groups , the two groups of the three groups , and the two groups of the three groups of the three groups , the two groups of the three groups of the three groups of the three groups",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.5692,
+          "distinct_1": 0.1833,
+          "distinct_2": 0.2881
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of the city . \n",
+          "new_tokens": 5,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000th . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important of the early 20th century . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th victory in the war . \n",
+          "new_tokens": 10,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that the theory of evolution is more likely to be influenced by the theory of evolution . \n",
+          "new_tokens": 18,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.1,
+          "distinct_1": 0.7778,
+          "distinct_2": 0.8235
+        }
+      ]
+    },
+    {
+      "name": "D1",
+      "description": "top_k=50, temperature=0.7",
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.025,
+        "distinct_1": 0.8797,
+        "distinct_2": 0.9627,
+        "mean_new_tokens": 26.88,
+        "eos_hit_rate": 0.875
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the Roman Empire . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the series . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that they are very much more likely to have a similar relationship . The researchers show that a large number of individuals may have been involved in the study of the genome . \n",
+          "new_tokens": 35,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8571,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of Los Angeles . The city is located on the main island of the Cid Sanctuary , near the Cid Sanctuary and is home to the Cid Sanctuary , which represents the Cid Sanctuary and the Baghdad Triptych . \n",
+          "new_tokens": 54,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.2,
+          "distinct_1": 0.6111,
+          "distinct_2": 0.7358
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000 + ≈ XL2 + 1 . The report also clarified that it was \" reasonably sensitive to the existence of the common law \" . \n",
+          "new_tokens": 35,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8857,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important and influential people in the world . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th anniversary of the war . \n",
+          "new_tokens": 10,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that they are the most significant of the theory . In the mid @-@ 20th century , the theory of evolution was challenged by J. Gordon Brown , who proposed that evolution was the result of its early evolution . Brown also developed an analogy for evolution , which was developed in the 1940s and 1950s",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.6833,
+          "distinct_2": 0.9661
+        }
+      ]
+    },
+    {
+      "name": "D2",
+      "description": "top_p=0.9, temperature=0.7 (no top_k)",
+      "settings": {
+        "temperature": 0.7,
+        "top_k": null,
+        "top_p": 0.9
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.0204,
+        "distinct_1": 0.8928,
+        "distinct_2": 0.9623,
+        "mean_new_tokens": 19.5,
+        "eos_hit_rate": 1.0
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the Roman Empire . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the series . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that they are active in the field . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of Los Angeles . The city is located on the main street of the city , and is also home to the city 's busiest bus service , which is operated by Amtrak . \n",
+          "new_tokens": 39,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.7692,
+          "distinct_2": 0.9737
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000 + ≈ XL2 + 1 . The European Commission approved a new report on April 30 , 2010 , and recommended that the Commission accept the recommendation . \n",
+          "new_tokens": 36,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8611,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important and influential people in the world . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th anniversary of the war . \n",
+          "new_tokens": 10,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that the hemisphere must have a hemisphere . This is not the case , because the hemisphere is the same as the hemisphere , so the hemisphere must have a hemoglob . \n",
+          "new_tokens": 41,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.1628,
+          "distinct_1": 0.5122,
+          "distinct_2": 0.725
+        }
+      ]
+    },
+    {
+      "name": "D3",
+      "description": "D1 + repetition_penalty=1.2",
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null,
+        "repetition_penalty": 1.2
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.0019,
+        "distinct_1": 0.8955,
+        "distinct_2": 0.9804,
+        "mean_new_tokens": 33.38,
+        "eos_hit_rate": 0.75
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the Roman Empire . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the series . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that they are very much more likely to be a member of the group , but they were also much smaller than other groups . They had been so far removed from the group as to find it difficult to determine whether they were members of the group . This has been attributed to the fact that the group is not",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.0154,
+          "distinct_1": 0.7167,
+          "distinct_2": 0.9153
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of Los Angeles . The city is located on the main island of San Andreas , a large community with facilities for housing and education and facilities for the elderly , particularly those in the neighborhoods of Cajuno and Anchorage . \n",
+          "new_tokens": 48,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8125,
+          "distinct_2": 0.9787
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000 + ≈ XL2786453.112xHz ) . \n",
+          "new_tokens": 25,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important and influential people in the world . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th anniversary of the U.S. military . The film was released on October 22 , 2002 in a 12 @-@ disc set with the theme song \" The Long and Winding Road \" at the EMI Music Publishing studio located in Los Angeles . \n",
+          "new_tokens": 53,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8679,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that they are the most significant of the groups . They could therefore be found in the modern evolutionary synthesis , but it was not until the time of P.T. MacDonald 's work that the evolution of the phylum was largely a result of the gradual evolution of organisms by the early twentieth century",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.7667,
+          "distinct_2": 0.9492
+        }
+      ]
+    },
+    {
+      "name": "D4",
+      "description": "D1 + no_repeat_ngram_size=3",
+      "settings": {
+        "temperature": 0.7,
+        "top_k": 50,
+        "top_p": null,
+        "no_repeat_ngram_size": 3
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.0,
+        "distinct_1": 0.9104,
+        "distinct_2": 0.9921,
+        "mean_new_tokens": 24.5,
+        "eos_hit_rate": 0.875
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the Roman Empire . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the series . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that they are very much more likely to have a similar relationship . The researchers show that a large number of individuals may have been involved in the study of the genome . \n",
+          "new_tokens": 35,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8571,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of Los Angeles . The city is located on the main island of the Cid Sanctuary , near the Cairngorm Island and is home to several different cultures . \n",
+          "new_tokens": 35,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8571,
+          "distinct_2": 0.9706
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000 + ≈ XL2 + 1 . The report also clarified that it was \" reasonably sensitive to the existence of the common law \" . \n",
+          "new_tokens": 35,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.8857,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important and influential people in the world . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th anniversary of the war . \n",
+          "new_tokens": 10,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that they are the most significant of the theory . In the mid @-@ 20th century , the theory of evolution was challenged by J. Gordon Brown , who proposed that evolution was the result of its early evolution . Brown also developed an analogy for evolution , which was developed in the 1940s and 1950s",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.6833,
+          "distinct_2": 0.9661
+        }
+      ]
+    },
+    {
+      "name": "D5",
+      "description": "D2 + repetition_penalty=1.2 + no_repeat_ngram_size=3",
+      "settings": {
+        "temperature": 0.7,
+        "top_k": null,
+        "top_p": 0.9,
+        "repetition_penalty": 1.2,
+        "no_repeat_ngram_size": 3
+      },
+      "aggregate": {
+        "mean_repeated_ngram_frac": 0.0,
+        "distinct_1": 0.9248,
+        "distinct_2": 0.9914,
+        "mean_new_tokens": 25.62,
+        "eos_hit_rate": 0.875
+      },
+      "per_prompt": [
+        {
+          "prompt": "The history of",
+          "generated": "The history of the Roman Empire . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "In the early years",
+          "generated": "In the early years of the series . \n",
+          "new_tokens": 6,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "Scientists have discovered that",
+          "generated": "Scientists have discovered that they are active in the field . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The city of",
+          "generated": "The city of Los Angeles . The city is located on the main street , and is connected to a large section of Interstate 94 ( I @-@ 94 ) with interchanges at Interstate 81 ( I- ) / Interstate 93 . In addition to Interstate 80 , there are two interstates in the city : I @-@ 69",
+          "new_tokens": 60,
+          "eos_hit": false,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.7333,
+          "distinct_2": 0.9661
+        },
+        {
+          "prompt": "According to the report,",
+          "generated": "According to the report,000 + ≈ XL2786453.112xHz ) . \n",
+          "new_tokens": 25,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "One of the most important",
+          "generated": "One of the most important and influential people in the world . \n",
+          "new_tokens": 9,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 1.0,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "During the war,",
+          "generated": "During the war,000th anniversary of the U.S. military . The European Commission also sought to discredit the American Red Cross and other foreign tourists . \n",
+          "new_tokens": 32,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.9062,
+          "distinct_2": 1.0
+        },
+        {
+          "prompt": "The theory suggests that",
+          "generated": "The theory suggests that the hemisphere 's specific states of motion are caused by a strong interaction between a body 's surface and a dark spot , causing it to be an invisible motion . The surface of this planet is called the \" outer boundary \" because of the size of the surface : \n",
+          "new_tokens": 58,
+          "eos_hit": true,
+          "repeated_ngram_frac": 0.0,
+          "distinct_1": 0.7586,
+          "distinct_2": 0.9649
+        }
+      ]
+    }
+  ]
+}

@@ -1,101 +1,80 @@
-# SHNU-LLM v0.2.0 Decoding Comparison
+# SHNU-LLM v0.2.0 — decoding comparison (D0–D5)
 
-## Purpose
+Every number here comes from `decoding_comparison.json`. That file was produced on
+Kaggle by `kaggle_bpb_decoding_v5.py` and is byte-identical to the Kaggle output
+(SHA-256 `e6f7b9d71c3a5338a3c016b306406fe6d0fbec21f025e723452a7203d3f7413d`,
+21,130 bytes). No training was performed.
 
-This experiment evaluates decoding controls on the frozen SHNU-LLM v0.2.0 step-20,000 checkpoint.
+## Supersedes `decoding_d0_d5.json`
 
-No model weights were changed and no training was performed.
+This comparison replaces the earlier D0–D5 run recorded in `decoding_d0_d5.json`. That file is
+kept for history but should no longer be cited. The two runs differ in two ways:
 
-## Evaluation provenance
+- **Repetition metric.** D0 (greedy) produced identical text in both runs for all 8 prompts, but
+  the earlier file's repetition values match trigram repeats counted over the generated tokens only.
+  For example, 37 of 58 trigrams gives 0.6379, and 2 of 16 gives 0.125. This file uses the full
+  re-encoded text, as `evaluate.py` does, which gives 0.5692 and 0.1 for the same completions.
+- **Sampled text (D1–D5).** Only the first prompt's completion matches in each sampled
+  configuration. That is consistent with the earlier run setting the seed once per configuration
+  rather than before every prompt. This run resets seed 1337 before every prompt.
+
+## Setup
 
 | Field | Value |
 |---|---|
-| Checkpoint | v0.2.0 step 20,000 |
-| Seed | 1337 |
-| Max new tokens | 60 |
-| Device | CPU |
-| Prompts | 8 fixed prompts |
-| Configurations | D0-D5 |
-| Model parameters | 33,890,816 |
+| Checkpoint | v0.2.0 `checkpoint_latest.pt`, step 20000, SHA-256 `9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e` |
+| Prompts | the 8 fixed prompts in `evaluation/eval_prompts.json`, unchanged |
+| Seed | 1337, reset before every prompt |
+| max_new_tokens | 60 for every configuration, including D0. `evaluate.py` uses 80, so D0 is not numerically identical to the harness greedy run. |
+| EOS | `eos_id = 3` (`<eos>`) passed to every configuration, so the EOS-hit rate is measurable |
+| Device | CPU, torch 2.10.0+cpu. Sampled outputs depend on the device and RNG, so the same seed on a GPU would give different text. |
+| Decoding code | `src/shnu_llm/decoding.py` and the extended `ShnuLM.generate` from branch `v0.2.1-eval` (commit `5beb26a`), copied verbatim into the Kaggle script because that branch is not on GitHub |
 
-## Configurations
+## How each metric is computed
 
-| Config | Configuration |
-|---|---|
-| D0 | Greedy |
-| D1 | Temperature 0.7 + Top-K 50 |
-| D2 | Temperature 0.7 + Top-P 0.9 |
-| D3 | D1 + repetition penalty 1.2 |
-| D4 | D1 + no-repeat 3-gram |
-| D5 | D2 + repetition penalty 1.2 + no-repeat 3-gram |
+- **mean_repeated_ngram_frac** is `repetition_metrics(n=3)` on the full decoded text (prompt plus completion) after re-encoding, which is how `evaluate.py` computes it. It is averaged over the 8 prompts.
+- **distinct-1 and distinct-2** are the unique unigram and bigram ratios over the newly generated token ids only, averaged over prompts.
+- **mean_new_tokens** is the number of newly generated tokens, counting the EOS token when one is emitted.
+- **eos_hit_rate** is the fraction of prompts whose generation emitted `<eos>` before reaching 60 tokens.
 
-## Measured results
+## Results
 
-| Config | Rep-3 | Distinct-1 | Distinct-2 | Mean length | EOS |
-|---|---:|---:|---:|---:|---:|
-| D0 | 0.0954 | 0.8438 | 0.8820 | 16.625 | 87.5% |
-| D1 | 0.1558 | 0.6971 | 0.7952 | 35.750 | 75.0% |
-| D2 | 0.0325 | 0.8040 | 0.9373 | 36.000 | 62.5% |
-| D3 | 0.0000 | 0.8902 | 0.9864 | 30.375 | 75.0% |
-| D4 | 0.0000 | 0.8339 | 0.9519 | 21.750 | 87.5% |
-| D5 | 0.0000 | 0.9449 | 0.9972 | 25.000 | 87.5% |
+| Config | Settings | rep-3gram frac | distinct-1 | distinct-2 | mean new tokens | EOS-hit rate |
+|---|---|---|---|---|---|---|
+| D0 | greedy (temperature 0) | 0.0837 | 0.8438 | 0.8820 | 16.62 | 0.875 |
+| D1 | top_k=50, T=0.7 | 0.0250 | 0.8797 | 0.9627 | 26.88 | 0.875 |
+| D2 | top_p=0.9, T=0.7 (no top_k) | 0.0204 | 0.8928 | 0.9623 | 19.50 | 1.000 |
+| D3 | D1 + repetition_penalty=1.2 | 0.0019 | 0.8955 | 0.9804 | 33.38 | 0.750 |
+| D4 | D1 + no_repeat_ngram_size=3 | 0.0000 | 0.9104 | 0.9921 | 24.50 | 0.875 |
+| D5 | D2 + repetition_penalty=1.2 + no_repeat_ngram_size=3 | 0.0000 | 0.9248 | 0.9914 | 25.62 | 0.875 |
 
-## Observations
+## One-line observation per configuration
 
-D0 produces relatively short generations and frequently reaches EOS, but repetition remains visible for some prompts.
+- **D0:** Seven of eight completions stop after one short sentence; the one that runs to 60 tokens ("Scientists have discovered that") falls into a "the two groups of the three groups" loop (repeated-trigram fraction 0.5692).
+- **D1:** The completions are more varied than D0's, but "The city of" repeats "the Cid Sanctuary" four times.
+- **D2:** All 8 completions end at EOS, several after a single short clause, and "The theory suggests that" repeats "hemisphere" five times.
+- **D3:** This gives the longest outputs (33.4 new tokens on average) with near-zero repetition, but the text still drifts off topic and includes malformed spans such as "XL2786453.112xHz".
+- **D4:** This produces the same text as D1 on 7 of 8 prompts; on "The city of" it removes the repeated "Cid Sanctuary" phrase, and it has no repeated trigrams at all.
+- **D5:** There are no repeated trigrams and it has the highest distinct-1, but completions wander, for example from a theory to a planet's surface, and "The city of" becomes a list of interstate numbers.
 
-D1 produces longer generations, while its measured repeated 3-gram fraction is higher than D0.
+## Proposed default: D4 (top_k=50, temperature=0.7, no_repeat_ngram_size=3)
 
-D2 reduces measured repetition relative to D1 and increases Distinct-2, but has the lowest EOS hit rate among the six configurations.
+**Why D4:**
 
-D3 eliminates measured repeated 3-grams while retaining longer generations. Some generations reach the 60-token limit without EOS.
+- It is the smallest change from D1, the top_k=50 / T=0.7 setting already used for the published T=0.7 samples.
+- It brought the measured repeated-trigram fraction from 0.0250 (D1) to 0.0000.
+- It raised distinct-2 from 0.9627 to 0.9921, the highest of the six configurations.
+- It only intervenes when a loop is about to form: 7 of 8 completions are identical to D1.
 
-D4 eliminates measured repeated 3-grams and produces shorter average generations than D3, with 87.5% EOS.
+**Why not D3 or D5:** `repetition_penalty` lowers the logit of every token already present, including "the", ",", ".", and "of". In D3 and D5 that changed most completions and produced more topic drift and malformed number strings in this sample. That is a qualitative judgment from 8 prompts, not a measured metric.
 
-D5 eliminates measured repeated 3-grams and records the highest Distinct-1 and Distinct-2 values in this experiment. Its EOS rate is 87.5%, with a 25-token mean generated length.
+**What improved over D0/D1:** repetition loops, as described above.
 
-## Proposed decoding default
+**What did not improve (the tradeoffs that remain):**
 
-For subsequent evaluation of this checkpoint, D5 is the proposed default decoding configuration:
+- **Early EOS dominates every configuration.** The EOS-hit rate is 0.75–1.00, and the mean completion length is 16–33 of the 60 allowed tokens. Most completions end with " . \n" followed by EOS after one sentence. A likely cause is that the training stream inserts `<eos>` after every WikiText record (roughly one line or paragraph each), so the model has learned to stop after one line. This has not been verified. No decoding setting in D0–D5 addresses it. `min_new_tokens` exists in the new decoding module but was not part of this comparison.
+- **Factual and topical quality are unchanged.** All configurations produce fluent-looking but unreliable content, as expected for a 34M-parameter model.
+- **The hard block has side effects.** A 3-gram block can also stop legitimate repetitions, such as names or "I @-@ 94"-style patterns.
+- **The evidence is thin.** This is 8 prompts and one seed on CPU. Treat the recommendation as provisional until it is confirmed on a larger prompt set or with more seeds.
 
-- temperature = 0.7
-- top_p = 0.9
-- repetition_penalty = 1.2
-- no_repeat_ngram_size = 3
-- max_new_tokens = 60
-
-This proposal is limited to decoding behavior measured in this experiment. It does not establish that D5 improves the underlying model or training quality.
-
-## Metric definitions and comparison boundary
-
-The D0-D5 results are generation-only measurements from `decoding_d0_d5.json`.
-
-The repeated 3-gram metric in this table should not be treated as directly equivalent to the repetition metric in the main evaluation harness unless the implementations are confirmed to use identical token spans and definitions.
-
-Distinct-1 and Distinct-2 are lexical diversity measurements over generated output.
-
-EOS is the percentage of the eight fixed prompts for which generation emitted the configured EOS token before reaching the maximum generation length.
-
-## Reproducibility
-
-The authoritative raw results are stored in:
-
-`evaluation/results/v0.2.0/decoding_d0_d5.json`
-
-The original temperature/top-k and temperature-1.0 generation artifacts are stored separately:
-
-`evaluation/results/v0.2.0/generations_t0.7.json`
-
-`evaluation/results/v0.2.0/generations_t1.0.json`
-
-All reported D0-D5 values above were produced directly from the validated JSON artifact.
-
-## Limitations
-
-This is a small fixed-prompt decoding experiment with eight prompts.
-
-It does not measure factuality, broad language-model quality, downstream task performance, or hallucination rate.
-
-Generation was performed on CPU. These outputs should therefore be described as CPU decoding results rather than GPU generation results.
-
-BPB remains NOT VERIFIED because the original validation text/token stream required to reproduce the metric is not currently available in the recovered evaluation artifacts.
+`scripts/generate.py` and `scripts/chat.py` were not modified. Wiring in the default is left to the CTO, as specified.
