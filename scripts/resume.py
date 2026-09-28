@@ -87,7 +87,8 @@ def load_data(out_dir: str, dataset: str, vocab_size: int, block_size: int, devi
 
 
 def resume_training(cfg, out_dir: str, dataset: str, allow_fresh: bool = False,
-                    device: str | None = None, verbose: bool = True, status_enabled: bool = True):
+                    device: str | None = None, verbose: bool = True, status_enabled: bool = True,
+                    run_name: str = S.DEFAULT_RUN_NAME):
     """Discover + verify + resume. Returns the train() result dict. Raises SystemExit
     on a missing checkpoint unless allow_fresh=True.
 
@@ -125,7 +126,7 @@ def resume_training(cfg, out_dir: str, dataset: str, allow_fresh: bool = False,
     status = status_cb = None
     if status_enabled:
         try:
-            status = S.TrainingStatus.for_run(out_dir)
+            status = S.TrainingStatus.for_run(out_dir, run_name=run_name)
             gpu_name, gpu_mem = _device_info(device)
             rec = status.reconcile(cfg, git_commit=S.current_git_commit(REPO),
                                    device=device, gpu_name=gpu_name, gpu_memory_gb=gpu_mem)

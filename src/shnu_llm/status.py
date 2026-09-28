@@ -85,14 +85,15 @@ class TrainingStatus:
 
     # ---- schema -----------------------------------------------------------
     @staticmethod
-    def default(cfg: ShnuConfig, git_commit: Optional[str] = None) -> dict:
+    def default(cfg: ShnuConfig, git_commit: Optional[str] = None,
+                run_name: str = DEFAULT_RUN_NAME) -> dict:
         tgt_steps = int(cfg.max_steps)
         tps = tokens_per_step(cfg)
         return {
             "schema_version": STATUS_SCHEMA_VERSION,
             "project": cfg.name,
             "version": cfg.version,
-            "run_name": DEFAULT_RUN_NAME,
+            "run_name": run_name,
             "config": {
                 "vocab_size": cfg.vocab_size, "n_layers": cfg.n_layers, "n_heads": cfg.n_heads,
                 "d_model": cfg.d_model, "block_size": cfg.block_size, "batch_size": cfg.batch_size,
@@ -183,7 +184,7 @@ class TrainingStatus:
         if data is None:
             if cfg is None:
                 raise ValueError("cannot create a fresh status without a cfg")
-            data = self.default(cfg)
+            data = self.default(cfg, run_name=self.run_name)
         if "state" in fields and fields["state"] not in VALID_STATES:
             raise ValueError(f"invalid state {fields['state']!r}; allowed: {VALID_STATES}")
         data.update(fields)
@@ -201,7 +202,7 @@ class TrainingStatus:
         to disk). Never resets a valid (step > 0) checkpointed run to step 0.
         """
         status = self.load_or_none()
-        data = status if status is not None else self.default(cfg, git_commit)
+        data = status if status is not None else self.default(cfg, git_commit, run_name=self.run_name)
         if git_commit is not None:
             data["git_commit"] = git_commit
         for k, v in (("device", device), ("gpu_name", gpu_name), ("gpu_memory_gb", gpu_memory_gb)):
@@ -290,7 +291,7 @@ class TrainingStatus:
     def render(self, data: Optional[dict] = None) -> str:
         d = data if data is not None else self.load_or_none()
         if d is None:
-            return (f"SHNU-LLM {DEFAULT_RUN_NAME} STATUS\n\n"
+            return (f"SHNU-LLM {self.run_name} STATUS\n\n"
                     f"No status file found at {self.status_path}\n"
                     f"(run has not started, or Drive is not mounted).")
 

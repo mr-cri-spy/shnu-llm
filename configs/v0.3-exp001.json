@@ -1,0 +1,313 @@
+{
+  "config_schema_version": 1,
+  "experiment": {
+    "id": "EXP-001",
+    "title": "Is v0.2.0 data-bound? Mixed WikiText-103 + FineWeb-Edu corpus at a fixed step budget",
+    "status": "PRE-TRAINING / NOT STARTED",
+    "branch": "v0.3-exp001",
+    "branched_from_commit": "4cdbb6bf47d43a111cdd78dd9c75129cc8c2fd57",
+    "changed_variables": [
+      "training_corpus"
+    ],
+    "specification": "evaluation/results/v0.3/EXP-001.md",
+    "schema_doc": "configs/v0.3-exp001.schema.md"
+  },
+  "provenance": {
+    "frozen_from_v0_2": [
+      "architecture",
+      "tokenizer",
+      "dataset.components[wikitext103] (train stream)",
+      "dataset.validation_sets.wikitext103_val",
+      "dataset.validation_sets.training_loop_val",
+      "training (hyperparameters, optimizer, schedule, budget)",
+      "training.seed",
+      "evaluation (harness, prompts, procedure)"
+    ],
+    "new_in_exp001": [
+      "dataset.components[fineweb_edu] (source)",
+      "dataset.components[fineweb_edu].revision / source_export_sha256",
+      "dataset.components[fineweb_edu].preprocessing (including min_chars)",
+      "dataset.mixing (mixed corpus construction)",
+      "dataset.mixed_train_npy_sha256",
+      "dataset.validation_sets.fineweb_edu_heldout",
+      "shnu_config.version",
+      "output (run directory and run name)"
+    ],
+    "unresolved_before_training": [
+      "dataset.components[fineweb_edu].revision or source_export_sha256 (FineWeb-Edu source identity)",
+      "dataset.components[fineweb_edu].train_npy_sha256",
+      "dataset.components[fineweb_edu].document_id_list_sha256",
+      "dataset.mixed_train_npy_sha256",
+      "dataset.validation_sets.fineweb_edu_heldout.sha256",
+      "dataset.validation_sets.fineweb_edu_heldout.document_id_list_sha256"
+    ],
+    "unknown_historical": [
+      "min_chars used by the v0.2 WikiText-103 preparation (not recorded)"
+    ]
+  },
+  "baseline": {
+    "version": "v0.2.0",
+    "tag": "v0.2.0",
+    "commit": "9b374b9f63c7b8f61323617311095e738f6cae66",
+    "config_path": "configs/v0.2.json",
+    "config_sha256": "3f539b3f2403936ce90bf570b83782f5b3c60ee59d5c1c861fb3b18d07236e7d",
+    "checkpoint_filename": "checkpoint_latest.pt",
+    "checkpoint_step": 20000,
+    "checkpoint_sha256": "9b472cf1dd4d56f893d12d58fcf68fa8a22f41458bbb71d45d030dd867cdcf7e",
+    "best_checkpoint_step": 19000,
+    "best_checkpoint_sha256": "15731810e0680b47fb6ab3349baddf504a0a188ad57510f83335ed16d53975c1",
+    "run_name": "shnu_v0.2",
+    "evaluation": {
+      "source": "docs/EVALUATION_v0.2.0.md",
+      "harness_val_loss": 3.175354,
+      "harness_perplexity": 23.9353,
+      "bits_per_byte": 1.040343,
+      "mean_repeated_ngram_frac": 0.0963
+    }
+  },
+  "architecture": {
+    "n_layers": 8,
+    "n_heads": 8,
+    "n_kv_heads": 8,
+    "d_model": 512,
+    "d_ff": 1408,
+    "block_size": 512,
+    "vocab_size": 16000,
+    "tie_embeddings": true,
+    "rope_theta": 10000.0,
+    "dropout": 0.0,
+    "expected_parameter_count": 33890816
+  },
+  "tokenizer": {
+    "type": "byte-level BPE (tokenizers library)",
+    "source": "v0.2.0 run bundle tokenizer/shnu_bpe.json (reused as is, never retrained)",
+    "filename": "tokenizer/shnu_bpe.json",
+    "sha256": "1bf9397a6213d1a303c9d149d028fa2c456dd1a94da57c233b5b21588d1ac017",
+    "vocab_size": 16000,
+    "retrain": false
+  },
+  "training": {
+    "max_steps": 20000,
+    "batch_size": 16,
+    "grad_accum_steps": 4,
+    "block_size": 512,
+    "effective_batch_sequences": 64,
+    "tokens_per_optimizer_step": 32768,
+    "total_tokens_processed": 655360000,
+    "seed": 1337,
+    "init": "random (fresh run; must NOT resume from any v0.2.0 checkpoint)",
+    "lr_schedule": {
+      "type": "cosine_with_linear_warmup",
+      "lr": 0.0003,
+      "warmup_steps": 500,
+      "min_lr_ratio": 0.1
+    },
+    "optimizer": {
+      "type": "AdamW",
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "weight_decay": 0.1,
+      "grad_clip": 1.0
+    },
+    "eval_interval": 500,
+    "eval_iters": 100,
+    "sample_interval": 2000,
+    "checkpoint_interval": 500,
+    "log_interval": 50,
+    "dtype": "auto",
+    "compile_model": false
+  },
+  "dataset": {
+    "training_corpus": "wikitext103_plus_fineweb_edu",
+    "dataset_key": "wikitext103_fineweb_edu_mix",
+    "preparation_script": "scripts/prepare_exp001_data.py",
+    "manifest_filename": "EXP001_DATA_MANIFEST.json",
+    "components": [
+      {
+        "name": "wikitext103",
+        "provenance_class": "frozen_from_v0_2",
+        "source": "Salesforce/wikitext, config wikitext-103-raw-v1, non-streaming (scripts/prepare_data.py, prepared 2026-09-10)",
+        "license": "CC BY-SA 3.0",
+        "reuse": "existing v0.2.0 tokenized stream, reused byte-for-byte; never re-prepared",
+        "train_npy_filename": "wikitext103_train_v16000.npy",
+        "train_tokens": 116995555,
+        "train_npy_dtype": "uint16",
+        "train_npy_size_bytes": 233991238,
+        "train_npy_sha256": "8b5ec7cf9c41f482fe425403dcebd6508921feb1e04c244f3242b23e4e923124",
+        "evidence": {
+          "hashed_on": "2026-09-28, read-only on Kaggle",
+          "independent_copies": [
+            "Kaggle dataset shnu-llm-v02 (datasets-20260915T192929Z-1-001/datasets)",
+            "Kaggle dataset shnu-ckpt-17k (SHNU_LLM/datasets)"
+          ],
+          "copies_identical": true,
+          "metadata_file": "wikitext103_metadata.json",
+          "metadata_sha256": "35cf6ec9df48500f1204d830d730f37c8fb4d6a1db4267e38ba9804440db5470",
+          "metadata_prepared_date": "2026-09-10",
+          "metadata_raw_sha256": "1f9f77ec26e7477b7bf3c80c72a2e365749731f3b41b81af08ef16d29a4c0c80",
+          "metadata_clean_stats": {
+            "records_in": 1165029,
+            "kept": 766109,
+            "removed_empty": 0,
+            "removed_short": 388622,
+            "removed_dup": 10298
+          },
+          "metadata_tokens": {
+            "total": 118177328,
+            "train": 116995555,
+            "val": 1181773,
+            "val_ratio": 0.01
+          },
+          "eos_count_train": 758602,
+          "eos_count_val": 7507,
+          "min_chars_used_by_v0_2": "UNKNOWN: not recorded in wikitext103_metadata.json; scripts/prepare_data.py default was 64, but the invocation is not recorded"
+        }
+      },
+      {
+        "name": "fineweb_edu",
+        "provenance_class": "new_in_exp001",
+        "source": "HuggingFaceFW/fineweb-edu, config sample-10BT",
+        "hf_dataset": "HuggingFaceFW/fineweb-edu",
+        "hf_config": "sample-10BT",
+        "revision": null,
+        "source_export_sha256": null,
+        "id_field": "id",
+        "text_field": "text",
+        "license": "ODC-By v1.0 (plus CommonCrawl Terms of Use); re-check the dataset card before download",
+        "target_train_tokens": 116995555,
+        "stopping_rule": "stream documents in source order, apply the preprocessing rules below, encode with the v0.2.0 tokenizer, stop at the first document boundary at or after target_train_tokens",
+        "train_npy_sha256": null,
+        "document_id_list_sha256": null,
+        "train_npy_filename": "fineweb_edu_train_v16000.npy",
+        "document_id_list_filename": "fineweb_edu_train_doc_ids.txt",
+        "preprocessing": {
+          "provenance_class": "new_in_exp001",
+          "rules": "drop empty/whitespace-only text; clean_text (normalize newlines, strip carriage returns and null bytes); drop text shorter than min_chars after strip(); drop exact duplicates (SHA-1 of cleaned text)",
+          "min_chars": 64,
+          "note": "64 is an EXP-001 choice for FineWeb-Edu. It matches the default of scripts/prepare_data.py, but it is NOT a verified v0.2 historical value; the v0.2 run's min_chars is UNKNOWN."
+        }
+      }
+    ],
+    "target_combined_train_tokens": 233991110,
+    "mixed_train_npy_filename": "wikitext103_fineweb_edu_mix_train_v16000.npy",
+    "mixed_train_npy_sha256": null,
+    "mixing": "split both training streams into documents at <eos>, order them with numpy.random.default_rng(1337).permutation, then concatenate; 50/50 by token count",
+    "expected_epochs": {
+      "baseline_v0_2_0": 5.6016,
+      "exp001": 2.8008
+    },
+    "validation_sets": {
+      "wikitext103_val": {
+        "provenance_class": "frozen_from_v0_2",
+        "description": "the exact v0.2.0 validation stream, reused byte-for-byte: the last 1,181,773 tokens (int(118,177,328 x 0.01)) of the tokenized, cleaned WikiText-103 train split",
+        "filename": "wikitext103_val_v16000.npy",
+        "tokens": 1181773,
+        "sha256": "058b710795d4a8dd6b7655a635eda645d7009b2112cccd53e7712783e5eddcb8",
+        "dtype": "uint16",
+        "size_bytes": 2363674
+      },
+      "fineweb_edu_heldout": {
+        "provenance_class": "new_in_exp001",
+        "description": "the next disjoint block of documents from the same FineWeb-Edu stream after the training slice; never trained on",
+        "target_tokens": 1181773,
+        "sha256": null,
+        "filename": "fineweb_edu_heldout_v16000.npy",
+        "document_id_list_filename": "fineweb_edu_heldout_doc_ids.txt",
+        "document_id_list_sha256": null
+      },
+      "training_loop_val": {
+        "provenance_class": "frozen_from_v0_2",
+        "description": "validation stream read by the training loop (in-loop eval and checkpoint_best selection): a byte copy of the frozen v0.2.0 WikiText-103 validation stream",
+        "filename": "wikitext103_fineweb_edu_mix_val_v16000.npy",
+        "copy_of": "wikitext103_val",
+        "sha256": "058b710795d4a8dd6b7655a635eda645d7009b2112cccd53e7712783e5eddcb8"
+      }
+    },
+    "download_status": "NOT DOWNLOADED"
+  },
+  "evaluation": {
+    "harness": "evaluation/evaluate.py",
+    "harness_sha256": "d7d0583ed221f56b9cafe6c755057c841afda34547be01886df26e3c2ee03591",
+    "prompts": "evaluation/eval_prompts.json",
+    "prompts_sha256": "bd156467e35db677ec665af6dbe4470720708dbfbaf910ced59ec1b4ebd2d0d0",
+    "seed": 1337,
+    "eval_iters": 100,
+    "greedy_max_new_tokens": 80,
+    "metrics": [
+      "val_loss",
+      "perplexity",
+      "bits_per_byte",
+      "mean_repeated_ngram_frac"
+    ],
+    "run_on": [
+      "wikitext103_val",
+      "fineweb_edu_heldout"
+    ],
+    "models": [
+      "v0.2.0 checkpoint_latest.pt (eval only)",
+      "EXP-001 final checkpoint"
+    ],
+    "thresholds": {
+      "primary_fineweb_bpb_max_ratio_vs_baseline": 0.95,
+      "guardrail_wikitext_bpb_max": 1.06114986,
+      "guardrail_wikitext_bpb_max_ratio_vs_baseline": 1.02,
+      "guardrail_repetition_max": 0.10593,
+      "guardrail_repetition_max_ratio_vs_baseline": 1.1
+    }
+  },
+  "output": {
+    "run_name": "shnu_v0.3_exp001",
+    "out_dir": "runs/shnu_v0.3_exp001",
+    "must_not_equal": [
+      "runs/shnu_v0.2",
+      "SHNU_LLM",
+      "/kaggle/working/SHNU_LLM",
+      "/content/drive/MyDrive/SHNU_LLM"
+    ]
+  },
+  "shnu_config": {
+    "name": "SHNU-LLM",
+    "version": "v0.3",
+    "vocab_size": 16000,
+    "n_layers": 8,
+    "n_heads": 8,
+    "n_kv_heads": 8,
+    "d_model": 512,
+    "d_ff": 1408,
+    "block_size": 512,
+    "rope_theta": 10000.0,
+    "dropout": 0.0,
+    "tie_embeddings": true,
+    "batch_size": 16,
+    "grad_accum_steps": 4,
+    "max_steps": 20000,
+    "warmup_steps": 500,
+    "lr": 0.0003,
+    "min_lr_ratio": 0.1,
+    "weight_decay": 0.1,
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "grad_clip": 1.0,
+    "eval_interval": 500,
+    "eval_iters": 100,
+    "sample_interval": 2000,
+    "checkpoint_interval": 500,
+    "log_interval": 50,
+    "seed": 1337,
+    "out_dir": "runs/shnu_v0.3_exp001",
+    "dtype": "auto",
+    "compile_model": false
+  },
+  "launcher": {
+    "script": "scripts/train_exp001.py",
+    "requires": [
+      "config preflight (scripts/validate_exp001.py)",
+      "tokenizer file SHA-256 match",
+      "empty checkpoints directory (fresh) or EXP-001's own checkpoints (--resume)",
+      "dataset manifest validation with every hash pinned in this config",
+      "--confirm-reviewed"
+    ]
+  }
+}
