@@ -171,7 +171,7 @@
         "source": "HuggingFaceFW/fineweb-edu, config sample-10BT",
         "hf_dataset": "HuggingFaceFW/fineweb-edu",
         "hf_config": "sample-10BT",
-        "revision": null,
+        "revision": "87f09149ef4734204d70ed1d046ddc9ca3f2b8f9",
         "source_export_sha256": null,
         "id_field": "id",
         "text_field": "text",

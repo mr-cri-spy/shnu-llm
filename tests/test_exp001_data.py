@@ -283,8 +283,11 @@ def test_manifest_missing_is_refused(tmp_path):
 def test_unpinned_config_is_refused(synth):
     run = synth["tmp"] / "run"
     _prepare(synth, run)
+    cfg = json.load(open(CFG_PATH))
+    cfg["dataset"]["components"][1]["revision"] = None
+    cfg["dataset"]["components"][1]["source_export_sha256"] = None
     with pytest.raises(X.DataManifestError) as ei:
-        X.validate_data_manifest(str(run / "datasets"), json.load(open(CFG_PATH)), frozen=synth["frozen"])
+        X.validate_data_manifest(str(run / "datasets"), cfg, frozen=synth["frozen"])
     msg = str(ei.value)
     for label in ("files.mix_train", "files.fineweb_train", "files.fineweb_heldout",
                   "files.fineweb_train_doc_ids", "files.fineweb_heldout_doc_ids"):
@@ -387,6 +390,7 @@ def test_launcher_refuses_unpinned_config(synth, monkeypatch):
     run, cfg_path = _run_dir_ready(synth, monkeypatch)
     cfg = json.load(open(cfg_path))
     cfg["dataset"]["mixed_train_npy_sha256"] = None
+    cfg["dataset"]["components"][1]["revision"] = None
     cfg["dataset"]["components"][1]["source_export_sha256"] = None
     p = synth["tmp"] / "unpinned.json"
     p.write_text(json.dumps(cfg))
@@ -500,7 +504,7 @@ def test_launcher_refuses_v02_out_dir():
 def test_prepare_script_refuses_download_without_pinned_revision(synth, monkeypatch, capsys):
     P = _load("prepare_exp001_data")
     cfg = json.load(open(CFG_PATH))
-    assert cfg["dataset"]["components"][1]["revision"] is None
+    cfg["dataset"]["components"][1]["revision"] = None
     cfg["tokenizer"]["sha256"] = synth["frozen"]["tokenizer_sha256"]
     cfg_path = synth["tmp"] / "cfg.json"
     cfg_path.write_text(json.dumps(cfg))
