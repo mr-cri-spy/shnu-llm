@@ -178,8 +178,8 @@
         "license": "ODC-By v1.0 (plus CommonCrawl Terms of Use); re-check the dataset card before download",
         "target_train_tokens": 116995555,
         "stopping_rule": "stream documents in source order, apply the preprocessing rules below, encode with the v0.2.0 tokenizer, stop at the first document boundary at or after target_train_tokens",
-        "train_npy_sha256": null,
-        "document_id_list_sha256": null,
+        "train_npy_sha256": "74aff8388f3309f723c875106b026ad49ea59e14803c3a00d45f63981c6a95d5",
+        "document_id_list_sha256": "c71c3555a73e674e00c0f4e6664cbb968ec8b31b184ada0a9a3250583403ab2a",
         "train_npy_filename": "fineweb_edu_train_v16000.npy",
         "document_id_list_filename": "fineweb_edu_train_doc_ids.txt",
         "preprocessing": {
@@ -192,7 +192,7 @@
     ],
     "target_combined_train_tokens": 233991110,
     "mixed_train_npy_filename": "wikitext103_fineweb_edu_mix_train_v16000.npy",
-    "mixed_train_npy_sha256": null,
+    "mixed_train_npy_sha256": "f33e196b53dec2a0f9c632b9e4d261502144bfe319008e8817971c2a74c1ab01",
     "mixing": "split both training streams into documents at <eos>, order them with numpy.random.default_rng(1337).permutation, then concatenate; 50/50 by token count",
     "expected_epochs": {
       "baseline_v0_2_0": 5.6016,
@@ -212,10 +212,10 @@
         "provenance_class": "new_in_exp001",
         "description": "the next disjoint block of documents from the same FineWeb-Edu stream after the training slice; never trained on",
         "target_tokens": 1181773,
-        "sha256": null,
+        "sha256": "fce1c42ccb69309cddebd84edb477eb7263f7fe5646860bd3cb556b4f2b21625",
         "filename": "fineweb_edu_heldout_v16000.npy",
         "document_id_list_filename": "fineweb_edu_heldout_doc_ids.txt",
-        "document_id_list_sha256": null
+        "document_id_list_sha256": "857eb9176d91bc9abc4c3b11a62e3627c747da01d43a32fc65527d282313c69f"
       },
       "training_loop_val": {
         "provenance_class": "frozen_from_v0_2",

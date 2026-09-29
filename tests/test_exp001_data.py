@@ -286,6 +286,11 @@ def test_unpinned_config_is_refused(synth):
     cfg = json.load(open(CFG_PATH))
     cfg["dataset"]["components"][1]["revision"] = None
     cfg["dataset"]["components"][1]["source_export_sha256"] = None
+    cfg["dataset"]["components"][1]["train_npy_sha256"] = None
+    cfg["dataset"]["components"][1]["document_id_list_sha256"] = None
+    cfg["dataset"]["mixed_train_npy_sha256"] = None
+    cfg["dataset"]["validation_sets"]["fineweb_edu_heldout"]["sha256"] = None
+    cfg["dataset"]["validation_sets"]["fineweb_edu_heldout"]["document_id_list_sha256"] = None
     with pytest.raises(X.DataManifestError) as ei:
         X.validate_data_manifest(str(run / "datasets"), cfg, frozen=synth["frozen"])
     msg = str(ei.value)
@@ -392,6 +397,11 @@ def test_launcher_refuses_unpinned_config(synth, monkeypatch):
     cfg["dataset"]["mixed_train_npy_sha256"] = None
     cfg["dataset"]["components"][1]["revision"] = None
     cfg["dataset"]["components"][1]["source_export_sha256"] = None
+    cfg["dataset"]["components"][1]["train_npy_sha256"] = None
+    cfg["dataset"]["components"][1]["document_id_list_sha256"] = None
+    cfg["dataset"]["mixed_train_npy_sha256"] = None
+    cfg["dataset"]["validation_sets"]["fineweb_edu_heldout"]["sha256"] = None
+    cfg["dataset"]["validation_sets"]["fineweb_edu_heldout"]["document_id_list_sha256"] = None
     p = synth["tmp"] / "unpinned.json"
     p.write_text(json.dumps(cfg))
     with pytest.raises(T.LaunchRefused) as ei:
